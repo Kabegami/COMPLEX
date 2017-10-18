@@ -8,14 +8,12 @@ import random
 # --------------------------------------------
 
 class Machine(object):
-    nom = 0
-    def __init__(self, P):
+    def __init__(self, P, nom='default'):
         """ P : ordonnancement """
         self.M_input = []
         self.M_output = []
         self.P = P
-        self.nom = Machine.nom
-        Machine.nom += 1
+        self.nom = nom
         self.actionEnCours = None
         self.cpt_actionEnCours = 0
         #M est une matrice colonne ou chaque case i correspond a la durée de la tachee i
@@ -35,7 +33,7 @@ class Machine(object):
         t = self.best_tache()
         self.actionEnCours = t
         if t is not None:
-            self.cpt_actionEnCours = 1
+            self.cpt_actionEnCours = 0
             self.M_input.remove(self.actionEnCours)
             self.P.remove(self.actionEnCours)
 
@@ -44,28 +42,28 @@ class Machine(object):
         if self.actionEnCours is None:
             self.pick_tache()
         else:
+            self.cpt_actionEnCours += 1
             if self.cpt_actionEnCours >= self.M[self.actionEnCours]:
                 self.M_output.append(self.actionEnCours)
                 self.pick_tache()
-            else:
-                self.cpt_actionEnCours += 1
-        
+                    
     def affiche(self):
         print('--------------------------------')
-        print('Machine n : ', self.nom)
+        print('Machine', self.nom)
         print('Input : ' , self.M_input)
         print('Output : ', self.M_output)
         print('action en cours : ', self.actionEnCours)
         print('cpt action en cours : ', self.cpt_actionEnCours)
+        print('vecteur valeur : ', self.M)
         print('--------------------------------')
         
 class Circuit(object):
     def __init__(self, P, M):
         """ P : ordonnancement, M : matrice des machines/taches """
         self.P = P
-        self.MA = Machine(P[::])
-        self.MB = Machine(P[::])
-        self.MC = Machine(P[::])
+        self.MA = Machine(P[::],'A')
+        self.MB = Machine(P[::],'B')
+        self.MC = Machine(P[::],'C')
         #on atribut les vecteur colonnes aux machines
         self.MA.M = M[0,:]
         self.MB.M = M[1,:]
@@ -81,23 +79,27 @@ class Circuit(object):
         self.MB.step()
         self.MC.step()
 
-    def affiche_all(self):
-        print('Circuit : ')
+    def affiche_all(self, t=-1):
+        if t != -1:
+            print('Circuit t :', t)
+        else:
+            print('Circuit : ')
         print('================================')
         self.MA.affiche()
         self.MB.affiche()
         self.MC.affiche()
         print('=================================')
 
-    def resolve(self):
+    def resolve(self,v=False):
         time = 0
         #tant que la machine C n'a pas finit toutes ses taches
         while len(self.MC.M_output) != len(self.P):
-            time += 1
             self.step()
-            self.affiche_all()
-            #import pdb; pdb.set_trace()
-        return time
+            if v:
+                self.affiche_all(time)
+            time += 1
+        #on retourne time - 1 car on veut le nombre de tour et non pas l'intervale entre debut et fin qui est nbtour + 1
+        return time - 1
         
             
         
@@ -124,29 +126,24 @@ def retire_tache(M, tache):
             new.append(M[i])
     return np.array(new)
 
-def retire_machine(M, machine):
+def retire_machine(M, machine=-1):
     """ M : matrice, machine : machine """
-    new = []
-    for line in M:
-        nline = []
-        for i in range(len(line)):
-            if i != machine:
-                nline.append(line[i])
-        new.append(nline)
-    return np.array(new)
+    return M[:-1,:]
         
 
-def Johnson(X, M):
+def Johnson(X, matrice,v=False):
     """ X : liste de tache, M:  Matrice des taches / machines """
     #il faut que M soit une matrice Machien / taches
     # probleme retourne une liste de machine au lieu dde retourner la liste des taches
     G = []
     D = []
-    print(M.shape)
+    M = matrice.copy()
+    if v:
+        print('m shape : ', M.shape)
     while X != []:
         d = np.unravel_index(M.argmin(), M.shape)
-        print('d : ', d)
-        # d : (tache ,machine)
+        if v:
+            print('d : ', d)
         #si c'est une tache de la machine A
         if d[0] == 0:
             #G prend la tache i
@@ -154,12 +151,14 @@ def Johnson(X, M):
         #si c'est une tache de la machine B
         else:
             D.append(d[1])
-        print('X : ', X)
-        print(d[1])
+        if v:
+            print('X : ', X)
+            print(d[1])
         X.remove(d[1])
         for i in range(M.shape[0]):
             M[:, d[1]] = np.inf
-        print(M)
+        if v:
+            print(M)
     return G + D
         
     
@@ -171,22 +170,13 @@ def C():
     
 
 def main():
-#    t1, t2 = read_file('test.txt')
-#    nbTaches = t1[0]
-#    AB= np.array(t2[:-1])
-#    print(AB)
-#    L1, L2  = Johnson(AB)
-#    L3 = C()
-#print(L2)
-    t1, t2 = read_file('test.txt')
+    t1, t2 = read_file('test2.txt')
     nbTaches = t1[0]
     M = np.array(t2)
     #il faut créer une fonction qui retire une machine
-    AB = retire_machine(M, 2)
-    print(type(AB))
+    AB = retire_machine(M)
     print('AB : ', AB)
     X = [ i for i in range(M.shape[1]) ]
-    print(X)
     P = Johnson(X, AB)
     print("P : ", P)
     solver = Circuit(P, M)
