@@ -180,7 +180,7 @@ def main():
     P = Johnson(X, AB)
     print("P : ", P)
     solver = Circuit(P, M)
-    t = solver.resolve()
+    t = solver.resolve(True)
     print('M : ', solver.MC.M)
     print(t)
     
