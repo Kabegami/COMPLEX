@@ -1,3 +1,4 @@
+#script pour incrementer la version car j'ai la fleme de le faire à la main
 X=`cat README.txt`
 git add .
 git commit -m "'$X'"
