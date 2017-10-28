@@ -1,0 +1,89 @@
+\documentclass[a4paper, 10pt]{article}
+%\usepackage{fontspec}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage[french]{babel}
+\usepackage[small, center]{titlesec}
+\usepackage{listings}
+\usepackage{amsmath, amsthm, amssymb, mathtools}
+
+\begin{document}
+	\begin{center}
+		\textbf{UE 4i900. Projet COMPLEX.}\\
+		\textbf{Ordonnancement d'atelier.}\\[0.5cm]
+		\textit{Alexandre Bontems, Lucas ...}
+	\end{center}
+	
+	\section*{Partie 1 : algorithme approché avec garantie de performance}
+	
+		\paragraph{Question 1.}{On sait que  $OPT \geq max\left( d_i^A + d_i^B + d_i^C \right)$ car c'est le temps demandé par la tâche la plus longue. De plus on sait que le maximum d'une distribution est supérieur ou égal à la moyenne de cette distribution. Ainsi on observe que:
+		\begin{equation*}
+			OPT \geq \frac{\sum_{i=1}^n \left( d_i^A + d_i^B + d_i^C \right)}{3}
+		\end{equation*}
+		Le pire des cas possibles est de n'effectuer aucune action en parallèle, donc soit $P$ une permutation quelconque, on a:
+		\begin{alignat*}{2}
+			P &\le \sum_{i} d_i^A + d_i^B + d_i^C \\
+			P &\le 3 \times \left( \frac{1}{3} \times \sum_{i=1}^n d_i^A + d_i^B + d_i^C \right)
+		\end{alignat*}
+		or $OPT \geq \frac{1}{3} \times \sum_{i=1}^n d_i^A + d_i^B + d_i^C$ donc :
+		\begin{alignat*}{2}
+			P &\leq 3 \times OPT \text{ donc P est 3-approché}
+		\end{alignat*}}
+		
+		\paragraph{Question 2.}{Soit $t_J$ le temps pour les machines A et B de finir les tâches selon l'ordonnancement retourné par l'algorithme de Johnson. Dans notre problème on considère en plus l'exécution des tâches sur la machine C donc la solution optimale $OPT$ sera supérieure ou égale à $t_J$. De plus, on sait que $\sum_{i=1}^n d_i^C \le OPT$ car il faudra au moins exécuter les tâches sur la machine C. Ainsi on peut écrire que:
+		\begin{equation*}
+			t_J + \sum_{i=1}^n d_i^C \le OPT + OPT
+		\end{equation*}
+		On a donc un algorithme 2-approché.\\[0.35cm]
+		En ce qui concerne la complexité, l'algorithme fait $n$ itérations et recherche la tâche de temps minimum sur les machines A et B ce qui se fait en $O(n)$. On a donc une complexité $O(n^2)$ pour l'algorithme de Johnson.
+		}
+		
+	\section*{Partie 2 : méthode exacte}
+		
+		\paragraph{Question 4.}{On cherche ici à améliorer la borne en considérant le fait que la machine B peut être en attente de la machine A avant de commencer à traiter les tâches de l'ensemble $\pi^\prime$ (elle a fini les tâches de $\pi$). Ainsi, si on définit $t^{\prime\pi}_B$ tel que:
+		\begin{equation*}
+			t^{\prime\pi}_B = \max \left\{ t^{\pi}_B, t^{\pi}_A + \min_{i \in \pi^\prime} d^i_A \right\}
+		\end{equation*}
+		Lorsque $t^{\pi}_B < t^{\pi}_A + \min_{i \in \pi^\prime} d^i_A$, la machine B a fini d'exécuter les tâches de $\pi$ mais attend que la première tâche de $\pi^\prime$ soit exécutée sur A pour poursuivre. Dans ce cas, le terme $t^{\prime\pi}_B$ correspond au plus petit temps avant que la machine B puisse exécuter les tâches de $\pi^\prime$. C'est pourquoi lorsqu'on remplace $t^\pi_B$ par $t^{\prime\pi}_B$ dans $b^\pi_B$ on obtient toujours une borne inférieure.\\
+		
+		Si on considère maintenant la machine C, on peut selon le même raisonnement définir les événements suivants:
+		\begin{itemize}
+			\item Lorsque $t^{\pi}_C < t^{\pi}_B + \min_{i \in \pi^\prime} d^i_B$, la machine C est en attente de la première tâche de $\pi^\prime$ sur B.
+			\item Lorsque $t^\pi_C < t^\pi_A + \min_{i \in \pi^\prime} \left\{ d^i_A + d^i_B \right\}$, la machine C est en attente de la tâche la plus courte de $\pi^\prime$ sur A et B.
+		\end{itemize}
+		
+		On peut alors remplacer $t^\pi_C$ dans $b^\pi_C$ par:
+		\begin{equation*}
+			t^{\prime\pi}_C = \max \left\{ t^{\pi}_C, t^{\pi}_B + \min_{i \in \pi^\prime} d^i_B,  t^\pi_A + \min_{i \in \pi^\prime} \left\{ d^i_A + d^i_B \right\} \right\}
+		\end{equation*}
+		}
+		
+		\paragraph{Question 5.}{Soit $P$ une permutation quelconque des tâches commençant par $\pi$ et $k$ une tâche de $\pi^\prime$. On peut dire que:
+		\begin{enumerate}
+			\item Si une action $i_1$ de $\pi^\prime$ s'exécute \textbf{avant} $k$, alors dans le meilleur des cas, elle ajoute une valeur $d^{i1}_A$ au temps total. 
+			\item Si une action $i_2$ de $\pi^\prime$  s'exécute \textbf{après} $k$, alors dans le meilleur des cas, elle ajoute une valeur $d^{i2}_C$ au temps total.
+		\end{enumerate}
+		
+		Notons maintenant $\Pi_1$ l'ensemble des tâches de $\pi^\prime$ qui s'exécutent avant $k$ et $\Pi_2$ celles qui s'exécutent après. Répartissons les tâches $i \in \pi^\prime, i \ne k$ de la manière suivante:
+		\begin{itemize}
+			\item si $d^i_A < d^i_C$ alors $i \in \Pi_1$,
+			\item sinon $i \in \Pi_2$.
+		\end{itemize}
+		Cela correspond au meilleur cas possible car d'après (1) et (2), dans une version optimiste on ajoute les $d^i_A$ des tâches $\Pi_1$ et les $d^i_C$ des tâches $\Pi_2$.
+		
+		Il en résulte que la borne $b$:
+		\begin{equation*}
+			b = t^{\pi}_A + \left(d^k_A + d^k_B + d^k_C \right) + \sum_{i \in \Pi_1} d^i_A + \sum_{i \in \Pi_2} d^i_C
+		\end{equation*}
+		est bien une borne inférieure du temps total pour un ordonnancement $P$ car:
+		\begin{itemize}
+			\item $P$ prend au moins $t^\pi_A$ unités de temps sur A,
+			\item on a montré que $\left(\Pi_1, k, \Pi_2\right)$ était la meilleure façon de répartir les tâches autour de $k$ sous l'hypothèse que les tâches de $\Pi_1$ ne s'attendront pas et de même pour $\Pi_2$.
+			\item De plus, on a posé aucune hypothèse sur $k$ donc dans $P$ n'importe quelle tâche de $\pi^\prime$ peut prendre le rôle de $k$.
+			\item Donc la date de fin d'ordonnancement associée à $P$ est supérieure ou égale à $b$.
+		\end{itemize}
+		}
+\end{document}
