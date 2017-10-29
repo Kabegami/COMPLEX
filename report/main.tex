@@ -74,9 +74,9 @@
 		\end{itemize}
 		Cela correspond au meilleur cas possible car d'après (1) et (2), dans une version optimiste on ajoute les $d^i_A$ des tâches $\Pi_1$ et les $d^i_C$ des tâches $\Pi_2$.
 		
-		Il en résulte que la borne $b$:
+		Il en résulte que la borne $b_2$:
 		\begin{equation*}
-			b = t^{\pi}_A + \left(d^k_A + d^k_B + d^k_C \right) + \sum_{i \in \Pi_1} d^i_A + \sum_{i \in \Pi_2} d^i_C
+			b_2 = \max_{k \in \pi^\prime} \left\{ t^{\pi}_A + \left(d^k_A + d^k_B + d^k_C \right) + \sum_{i \in \Pi_1} d^i_A + \sum_{i \in \Pi_2} d^i_C \right\}
 		\end{equation*}
 		est bien une borne inférieure du temps total pour un ordonnancement $P$ car:
 		\begin{itemize}
@@ -86,4 +86,6 @@
 			\item Donc la date de fin d'ordonnancement associée à $P$ est supérieure ou égale à $b$.
 		\end{itemize}
 		}
+		
+		\paragraph{Question 6.}{}
 \end{document}
