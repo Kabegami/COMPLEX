@@ -1,4 +1,4 @@
-#encodage utf8
+# coding: utf-8
 
 import numpy as np
 import circuit
@@ -11,43 +11,47 @@ def read_file(fichier):
     f.close()
     return matrice[0], matrice[1:]
 
-def borneA(pi, matrice):
+def borneA(pi, matrice,v=False):
     """ pi : ordonnancement (liste), matrice des taches np.array"""
     #ATTENTION la matrice qu'on stoque dans les fichiers n'a pas le bon format vis à vis des données
     #m = matrice.T
     m = matrice
-    print(m)
-    machineA = m[0,:]
-    #print("machineA",machineA)
+    if v:
+        print("matrice A : ", matrice)
+    machineA = matrice[0]
+    if v:
+        print("machineA",machineA)
     s = 0
+    #s'occupe de tpiA et de SIGMA(dia) en meme tmeps
     for i in range(len(machineA)):
-        if i in pi:
-            s += machineA[i]
+        s += machineA[i]
     
 
     mini = float("inf")
     index_mini = None
-    BC = m[:,1:]
-    for i in range(len(BC)):
-        if (i+1) not in pi:
-            line = BC[i]
-            print('line :', line)
-            v = np.sum(line)
-            print('v : ', v)
-            if v < mini:
-                mini = v
+    BC = matrice[1:3]
+    if v:
+        print("=======================")
+        print('BC : ', BC)
+        print("=======================")
+    for i in range(len(BC[0])):
+        if i not in pi:
+            mini = min(mini, BC[0][i] + BC[1][i])
+    if v:
+        print('plus petite somme : ', mini)
     return s + mini
 
-def borneB(pi, matrice):
+def borneB(pi, matrice,v=False):
     s = 0
     c = circuit.Circuit2M(pi, matrice)
     tB = c.resolve()
     borneB = 0
     tA = 0
-    print("matrice : ", matrice)
-    m = matrice.T
-    print("m :", m) 
-    machineA = m[0]
+    if v:
+        print("matrice : ", matrice) 
+    machineA = matrice[0]
+    if v:
+        print("machineA : ", machineA)
     miniA = float("inf")
     for i in range(len(machineA)):
         if i in pi:
@@ -56,13 +60,13 @@ def borneB(pi, matrice):
             if machineA[i] < miniA:
                 miniA = machineA[i]
     s += max(tB, tA + miniA)
-    machineB = m[1]
+    machineB = matrice[1]
 
     for i in range(len(machineB)):
         if not(i in pi):
             s += machineB[i]
 
-    machineC = m[2]
+    machineC = matrice[2]
     miniC = float("inf")
     for i in range(len(machineC)):
         if not ( i in pi):
@@ -70,6 +74,25 @@ def borneB(pi, matrice):
                 miniC =machineC[i]
     s += miniC
     return s
+
+def borneC(pi, matrice,v=False):
+    s = 0
+    c = circuit.Circuit(pi,matrice)
+    tc = c.resolve()
+    s += tc
+    if v:
+        print('matrice : ', matrice)
+    machineC = matrice[2]
+    for i in range(len(machineC)):
+        if not(i in pi):
+            s += machineC[i]
+    return s
+
+def b1(pi, matrice,v=False):
+    bA = borneA(pi, matrice,v)
+    bB = borneB(pi, matrice,v)
+    bC = borneC(pi, matrice,v)
+    return max(bA,bB,bC)
     
 
 def main():
@@ -78,9 +101,11 @@ def main():
     print(nbTaches)
     matrice = np.array(t2)
     m = matrice.T
-    ba = borneA([0],m)
+    ba = borneA([0],matrice)
     bB = borneB([0],matrice)
+    bC = borneC([0],matrice)
     print('ba : ', ba)
     print('bB : ', bB)
+    print('bC : ', bC)
 
 main()
