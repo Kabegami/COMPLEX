@@ -16,16 +16,23 @@ def read_file(fichier):
 class Noeud(object):
     def __init__(self, P, matrice, Lrestantes, f_borneInf, borneSup):
         #borneSup est une liste !
-        print('matrice : ', matrice)
+        #print('matrice : ', matrice)
         self.P = P
         self.Lrestantes = Lrestantes
         self.f_borneInf = f_borneInf
-        self.borneInf = f_borneInf(P, matrice,True)
+        self.borneInf = f_borneInf(P, matrice)
+#        print('borne inf : ', self.borneInf)
         self.borneSup = borneSup
 
-    def expend(self):
+    def expend(self,v=False):
         if self.borneInf > self.borneSup[0]:
             #on elague
+            if v:
+                print("==============================================")
+                print('elagation')
+                print('borne inf : {}'.format(self.borneInf))
+                print('borne sup : {}'.format(self.borneSup))
+                print("==============================================")                
             return None
         else:
             if self.Lrestantes != []:
@@ -52,35 +59,59 @@ class Arbre(object):
         self.LNode = []
         self.LNode.append(Noeud([], matrice,taches, f_borneInf, self.borneSup))
 
-    def expend(self):
+    def expend(self,debug=False):
         node = self.LNode[-1]
-        res = node.expend()
+        if debug:
+            print('on examine le noeud ', node)
+        res = node.expend(debug)
+        if debug:
+            print('res : ', res)
         if res == None:
-            print('on supprime une feuille')
             del self.LNode[-1]
         else:
-            if res == True:
+            if type(res) == bool and res == True:
                 #on est arriver à une feuille
                 v = node.borneInf
-                if v < self.borneSup:
-                    self.borneSup = [v]
-                    print('la nouvelle borne sup est :', v)
-                    self.bestP = node.P[::]
+                if len(node.P) < self.nbTaches:
+                    #noeud intermedaire
+                    del self.LNode[-1]
+                else:
+                    if debug:
+                        print('--------------------------------')
+                        print('on examine une feuille ')
+                        print('borne inf : {}, borne sup : {}'.format(v, self.borneSup))
+                        print('--------------------------------')
+                
+                    if v < self.borneSup[0]:
+                        self.borneSup = [v]
+                        if debug:
+                            print('la nouvelle borne sup est :', v)
+                        self.bestP = node.P[::]
+                    print('bestP : {}'.format(self.bestP))
+                    del self.LNode[-1]
             else:
                 P = (node.P)[::]
                 P.append(res)
                 Lrestantes = (node.Lrestantes)[::]
                 new = Noeud(P, self.matrice, Lrestantes, self.f_borneInf, self.borneSup)
-                print("creation du noeud :", new)
-                Lrestantes.append(new)
+                if debug:
+                    print("creation du noeud :", new)
+                self.LNode.append(new)
 
-    def resolve(self):
+    def resolve(self,v=False):
+        cpt = 0
         while self.LNode != []:
-            self.expend()
+            self.expend(v)
+            if v:
+                print('appel de resolve numero : {}'.format(cpt))
+                cpt += 1
         return self.bestP
         
 
 def main():
+    print("***************************************************")
+    print("       DEBUT DU PROGAMME")
+    print("***************************************************")
     t1, t2 = read_file('Instances/test2.txt')
     nbTaches = t1[0]
     print(nbTaches)
@@ -91,6 +122,8 @@ def main():
     tree = Arbre(taches, matrice, bornes.b1)
     P = tree.resolve()
     print('P : ', P)
+    c = circuit.Circuit(P, matrice)
+    print('valeur de la solution optimale : ', c.resolve())
 
 main()
     

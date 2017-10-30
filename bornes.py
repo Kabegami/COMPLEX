@@ -25,7 +25,10 @@ def borneA(pi, matrice,v=False):
     #s'occupe de tpiA et de SIGMA(dia) en meme tmeps
     for i in range(len(machineA)):
         s += machineA[i]
-    
+
+    if len(pi) == len(matrice[0]):
+        #cas particulier ou pi est un ordonancement final
+        return s
 
     mini = float("inf")
     index_mini = None
@@ -45,6 +48,9 @@ def borneB(pi, matrice,v=False):
     s = 0
     c = circuit.Circuit2M(pi, matrice)
     tB = c.resolve()
+    if len(pi) == len(matrice[0]):
+        #cas particulier ou pi est un ordonancement final
+        return tB
     borneB = 0
     tA = 0
     if v:
@@ -79,6 +85,9 @@ def borneC(pi, matrice,v=False):
     s = 0
     c = circuit.Circuit(pi,matrice)
     tc = c.resolve()
+    if len(pi) == len(matrice[0]):
+        #cas particulier ou pi est un ordonancement final
+        return tc
     s += tc
     if v:
         print('matrice : ', matrice)
