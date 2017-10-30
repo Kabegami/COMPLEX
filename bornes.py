@@ -88,13 +88,25 @@ def borneC(pi, matrice,v=False):
     if len(pi) == len(matrice[0]):
         #cas particulier ou pi est un ordonancement final
         return tc
-    s += tc
+    #amelioration tC prime
+    c = circuit.Circuit2M(pi, matrice)
+    tB = c.resolve()
     if v:
         print('matrice : ', matrice)
+    machineA = matrice[0]
+    machineB = matrice[1]
     machineC = matrice[2]
+    tA = 0
+    miniB = float("inf")
+    miniAB = float("inf")
     for i in range(len(machineC)):
-        if not(i in pi):
+        if i not in pi:
             s += machineC[i]
+            miniB = min(miniB, machineB[i])
+            miniAB = min(miniAB, machineA[i] + machineB[i])
+        else:
+            tA += machineA[i]
+    s += max(tc, tB + miniB, tA + miniAB)
     return s
 
 def b1(pi, matrice,v=False):
