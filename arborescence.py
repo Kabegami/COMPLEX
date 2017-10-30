@@ -21,6 +21,7 @@ class Noeud(object):
         self.Lrestantes = Lrestantes
         self.f_borneInf = f_borneInf
         self.borneInf = f_borneInf(P, matrice)
+        self.indexFils = 0
 #        print('borne inf : ', self.borneInf)
         self.borneSup = borneSup
 
@@ -35,9 +36,9 @@ class Noeud(object):
                 print("==============================================")                
             return None
         else:
-            if self.Lrestantes != []:
-                res = self.Lrestantes[0]
-                del self.Lrestantes[0]
+            if self.indexFils < len(self.Lrestantes):
+                res = self.Lrestantes[self.indexFils]
+                self.indexFils += 1
                 return res
             else:
                 return True
@@ -87,12 +88,13 @@ class Arbre(object):
                         if debug:
                             print('la nouvelle borne sup est :', v)
                         self.bestP = node.P[::]
-                    print('bestP : {}'.format(self.bestP))
+                        print('bestP : {}'.format(self.bestP))
                     del self.LNode[-1]
             else:
                 P = (node.P)[::]
                 P.append(res)
                 Lrestantes = (node.Lrestantes)[::]
+                Lrestantes.remove(res)
                 new = Noeud(P, self.matrice, Lrestantes, self.f_borneInf, self.borneSup)
                 if debug:
                     print("creation du noeud :", new)
@@ -112,7 +114,7 @@ def main():
     print("***************************************************")
     print("       DEBUT DU PROGAMME")
     print("***************************************************")
-    t1, t2 = read_file('Instances/test2.txt')
+    t1, t2 = read_file('Instances/test3.txt')
     nbTaches = t1[0]
     print(nbTaches)
     taches = [i for i in range((int)(nbTaches))]
@@ -120,9 +122,10 @@ def main():
     matrice = np.array(t2)
     print(matrice)
     tree = Arbre(taches, matrice, bornes.b1)
-    P = tree.resolve()
+    P = tree.resolve(True)
     print('P : ', P)
     c = circuit.Circuit(P, matrice)
+    #il y a probablement un bug, il retourne toujours la premiere solution [0,1,2,3,4,5]
     print('valeur de la solution optimale : ', c.resolve())
 
 main()
