@@ -114,7 +114,7 @@ def main():
     print("***************************************************")
     print("       DEBUT DU PROGAMME")
     print("***************************************************")
-    t1, t2 = read_file('Instances/test3.txt')
+    t1, t2 = read_file('Instances/test2.txt')
     nbTaches = t1[0]
     print(nbTaches)
     taches = [i for i in range((int)(nbTaches))]
