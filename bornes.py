@@ -2,6 +2,7 @@
 
 import numpy as np
 import circuit
+import random
 
 def read_file(fichier):
     f = open(fichier, 'r')
@@ -114,10 +115,44 @@ def b1(pi, matrice,v=False):
     bB = borneB(pi, matrice,v)
     bC = borneC(pi, matrice,v)
     return max(bA,bB,bC)
+
+def b2(pi, matrice,v=False):
+    #la borne 2 est trop optimiste du coup quand on est dans une feuille, on a une mauvaise estimation
+    s = 0
+    machineA = matrice[0]
+    machineB = matrice[1]
+    machineC = matrice[2]
+    tA = 0
+    for i in range(len(machineA)):
+        if i in pi:
+          tA += machineA[i]
+    s += tA
+    #si il n'y a pas de pi
+    if len(pi) == len(machineA):
+        return s
+    #on selectionne k n'appartenant pas a P
+    t = len(machineA) - 1
+    k = random.randint(0, t)
+    while k in pi:
+        k = random.randint(0, t)
+
+    if v:
+        print('taille : ', len(machineA) -1)
+        print('k : ', k)
+        print('vecteur k : ', matrice[:,k])
+    s += np.sum(matrice[:,k])
+    
+    for i in range(len(machineA)):
+        if i not in pi and i != k:
+            if machineA[i] < machineC[i]:
+                s += machineA[i]
+            else:
+                s +=machineC[i]
+    return s
     
 
 def main():
-    t1, t2 = read_file('Instances/test2.txt')
+    t1, t2 = read_file('Instances/exempleProf/test3.txt')
     nbTaches = t1[0]
     print(nbTaches)
     matrice = np.array(t2)
@@ -128,5 +163,7 @@ def main():
     print('ba : ', ba)
     print('bB : ', bB)
     print('bC : ', bC)
+    borne2 = b2([0], matrice,True)
+    print('borne2 : ', borne2)
 
-main()
+#main()

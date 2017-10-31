@@ -82,9 +82,14 @@ class Arbre(object):
                         print('on examine une feuille ')
                         print('borne inf : {}, borne sup : {}'.format(v, self.borneSup))
                         print('--------------------------------')
+
+                    #pas nessessaire pour la borne1
+                    c = circuit.Circuit(node.P, self.matrice)
+                    trueValue = c.resolve()
                 
-                    if v < self.borneSup[0]:
-                        self.borneSup = [v]
+                    if trueValue < self.borneSup[0]:
+                        #probleme il faut prendre la vrai valeur de la solution ?
+                        self.borneSup = [trueValue]
                         if debug:
                             print('la nouvelle borne sup est :', v)
                         self.bestP = node.P[::]
@@ -107,26 +112,28 @@ class Arbre(object):
             if v:
                 print('appel de resolve numero : {}'.format(cpt))
                 cpt += 1
-        return self.bestP
+        return self.bestP, self.borneSup[0]
         
 
 def main():
     print("***************************************************")
     print("       DEBUT DU PROGAMME")
     print("***************************************************")
-    t1, t2 = read_file('Instances/test2.txt')
+    t1, t2 = read_file('Instances/exempleProf/test3.txt')
     nbTaches = t1[0]
     print(nbTaches)
     taches = [i for i in range((int)(nbTaches))]
     print('taches' ,taches)
     matrice = np.array(t2)
     print(matrice)
-    tree = Arbre(taches, matrice, bornes.b1)
-    P = tree.resolve(True)
+    #tree = Arbre(taches, matrice, bornes.b1)
+    tree = Arbre(taches, matrice, bornes.b2)
+    P, sol = tree.resolve(True)
     print('P : ', P)
+    print('valeur de la solution optimale : ', sol)
     c = circuit.Circuit(P, matrice)
-    #il y a probablement un bug, il retourne toujours la premiere solution [0,1,2,3,4,5]
-    print('valeur de la solution optimale : ', c.resolve())
+    res = c.resolve()
+    print('resultat du circuit : ', res)
 
 main()
     
