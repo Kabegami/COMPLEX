@@ -3,6 +3,7 @@
 import random
 import math
 import numpy as np
+import os
 
 
 def genere1(nbTaches, ai=1, bi=100):
@@ -116,26 +117,14 @@ def save(fichier, data):
     f.write(instance)
     f.close()
 
-def createInstance(fichier,fGeneration=genere1, saveInstance=True,nbTaches=8, nbInstance=10):
-    L_global_mat = []
+def createInstance(dossier, fGeneration, nbTaches, nbInstance, saveInstance=True):
+    prefix = dossier + '/' + 'test'
     for i in range(nbInstance):
+        filename = prefix + (str)(i)
         n, matrice = fGeneration(nbTaches)
-        L_global_mat.append(matrice)
-
-    global_mat = np.array(L_global_mat)
-    #puis on parcours la matrice global
-    mat = global_mat[0].copy()
-    for i in range(1, nbInstance):
-        mat2 = global_mat[i]
-        mat += mat2
-    res = mat // (1.0 * nbInstance)
-    #mat /= (1.0 * nbInstance)
-    res = res.astype(int)
-#    print('res : ', res)
-#    print('type matrice : ', res.dtype)
-    if saveInstance:
-        save(fichier, (nbTaches, res))
-    return res
+        if saveInstance:
+            save(filename, (nbTaches, matrice))
+    
 
 def creer_jeu_de_test(dossier, fGeneration, nbTest, nbInstance=10, step=5):
     print("===============================================")
@@ -143,8 +132,11 @@ def creer_jeu_de_test(dossier, fGeneration, nbTest, nbInstance=10, step=5):
     prefix = dossier
     nbTaches = step
     for i in range(nbTest):
-        filename = prefix + 'instances' + (str)(nbTaches)
-        createInstance(filename, fGeneration,True, nbTaches, nbInstance)
+        dirname = prefix + 'instances' + (str)(nbTaches)
+        #creation du dossier si il n'existe pas
+        if not(os.path.exists(dirname)):
+            os.mkdir(dirname)
+        createInstance(dirname, fGeneration, nbTaches, nbInstance, True)
         nbTaches += step
     print("Fin de la creation des tests")
     print("===============================================")
@@ -153,8 +145,8 @@ def create_dataSet(nbTest,nbInstance,step=5):
     creer_jeu_de_test('Instances/type1/', genere1, nbTest, nbInstance,step)
     creer_jeu_de_test('Instances/type2/', genere2, nbTest, nbInstance,step)
     creer_jeu_de_test('Instances/type3/', genere3, nbTest, nbInstance,step)
-        
-if __name__ == "__main__":
+
+def main():
     nbTaches = 8
     t = genere1(nbTaches)
     s = instance_to_string(t)
@@ -166,12 +158,17 @@ if __name__ == "__main__":
     print('s : ', s)
     print('s2 : ', s2)
     print('s3 : ', s3)
-    g = createInstance('',genere1,False,10,8)
-    print(g)
+    #g = createInstance('',genere1,False,10,8)
+    #print(g)
     #creer_jeu_de_test('Instances/type3/', genere3, 40,  10)
     create_dataSet(40,10)
 #   print(s2)
     #print(s)
     #save('my_data_m1', t)
 
+    
+#if __name__ == "__main__":
+#    main()
+
+main()
 
