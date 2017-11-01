@@ -93,7 +93,8 @@ class Arbre(object):
                         if debug:
                             print('la nouvelle borne sup est :', v)
                         self.bestP = node.P[::]
-                        print('bestP : {}'.format(self.bestP))
+                        if debug: 
+                            print('bestP : {}'.format(self.bestP))
                     del self.LNode[-1]
             else:
                 P = (node.P)[::]
@@ -115,7 +116,7 @@ class Arbre(object):
         return self.bestP, self.borneSup[0]
         
 
-def main():
+if __name__ == "__main__":
     print("***************************************************")
     print("       DEBUT DU PROGAMME")
     print("***************************************************")
@@ -134,7 +135,3 @@ def main():
     c = circuit.Circuit(P, matrice)
     res = c.resolve()
     print('resultat du circuit : ', res)
-
-main()
-    
-    

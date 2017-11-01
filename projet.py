@@ -68,7 +68,7 @@ def C():
     return r
     
 
-def main():
+if __name__ == "__main__":
     t1, t2 = read_file('Instances/exempleProf/test2.txt')
     nbTaches = t1[0]
     M = np.array(t2)
