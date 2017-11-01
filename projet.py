@@ -30,13 +30,15 @@ def retire_machine(M, machine=-1):
     return M[:-1,:]
         
 
-def Johnson(X, matrice,v=False):
+def Johnson(nbTaches, matrice,v=False):
     """ X : liste de tache, M:  Matrice des taches / machines """
     #il faut que M soit une matrice Machien / taches
     # probleme retourne une liste de machine au lieu dde retourner la liste des taches
+    X = [i for i in range((int)(nbTaches))]
     G = []
     D = []
     M = matrice.copy()
+    retire_machine(M)
     if v:
         print('m shape : ', M.shape)
     while X != []:
@@ -76,12 +78,10 @@ if __name__ == "__main__":
     AB = retire_machine(M)
     print('AB : ', AB)
     X = [ i for i in range(M.shape[1]) ]
-    P = Johnson(X, AB)
+    P = Johnson(nbTaches, AB)
     print("P : ", P)
     solver = circuit.Circuit(P, M)
     t = solver.resolve(True)
     print('M : ', solver.MC.M)
     print(t)
-    
-    
-main()
+

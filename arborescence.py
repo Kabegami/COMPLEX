@@ -3,7 +3,9 @@
 import numpy as np
 import bornes
 import circuit
-import queue
+#import queue
+#Pour python2 utiliser Queue et non queue
+import Queue as queue
 
 def read_file(fichier):
     f = open(fichier, 'r')
@@ -114,6 +116,13 @@ class Arbre(object):
                 print('appel de resolve numero : {}'.format(cpt))
                 cpt += 1
         return self.bestP, self.borneSup[0]
+
+def arborescence_resolve(nbTaches, matrice, b=bornes.b1):
+    print('nbTaches : ', nbTaches)
+    taches = [i for i in range(nbTaches)]
+    tree = Arbre(taches, matrice, b)
+    P, res = tree.resolve()
+    return P
         
 
 if __name__ == "__main__":
