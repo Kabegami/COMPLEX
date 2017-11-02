@@ -151,10 +151,25 @@ def verifComplexite(L_nbTaches, L_time):
     print('q : ', q)
     draw(t1,t2)
 
+def build_graphe(methode,name, numMax ,nbInstances, step, xlabel='nombre de taches', ylabel='temps de calcul', courbe_label='type'):
+    prefix = 'type'
+    L = []
+    M = []
+    for i in range(1,4):
+        data_type = prefix + (str)(i)
+        L_nbTaches, L_time = mesure_time(methode, data_type, numMax, nbInstances, 5)
+        s = name + '_' + data_type
+        L.append(s)
+        M.append(L_time)
+        save_graphe_data(s,L_nbTaches, L_time)
+    multipledraw(L_nbTaches, M, xlabel, ylabel, courbe_label)
+    
+
 def main():
     #test()
-    #L_nbTaches, L_time = mesure_time(projet.Johnson, 'type1', 200, 10, 5)
-    #save_graphe_data('Johnson/n²', L_nbTaches, L_time)
+    build_graphe(projet.Johnson,'Johnson',400,10,5)
+    #L_nbTaches, L_time = mesure_time(projet.Johnson, 'type3', 200, 10, 5)
+    #save_graphe_data('Johnson_type3', L_nbTaches, L_time)
     #L_nbTaches, L_time = mesure_time(arborescence.arborescence_resolve, 'type3', 5, 5, 1)
     #save_graphe_data('exacte_type3_b1', L_nbTaches, L_time)
     #L_nbTaches, L_time = mesure_time(arborescence.arborescence_mix, 'type3', 9, 5, 1)
@@ -162,8 +177,8 @@ def main():
     #draw(L_nbTaches, L_time)
     #print('L_nbTaches : ', L_nbTaches)
     #print('L_time : ', L_time)
-    L_nbTaches, M = read_graphe_file('node_type1_b1', 'node_type2_b1', 'node_type3_b1')
-    multipledraw(L_nbTaches, M,'nombre de taches','nombre de noeuds')
+    #L_nbTaches, M = read_graphe_file('Johnson_type1', 'Johnson_type2', 'Johnson_type3')
+    #multipledraw(L_nbTaches, M,'nombre de taches','temps de calcul')
     #draw(L_nbTaches, M)
     #print(M)
     #L_nbTaches, L_cpt = mesure_node(arborescence.get_noeud_explore, 'type3', 7, 5, 1)
