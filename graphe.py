@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import os
 import time
 import circuit
@@ -25,7 +27,7 @@ def getData(filename):
     M = np.array(t2)
     return nbTaches, M
 
-def mesure_time(methode, typeGen, nbTachesMax,nbInstances, step,debug=False,*args):
+def mesure_time(methode, typeGen, nbTachesMax,nbInstances, step, debug=False,*args):
     print('args : ', args)
     prefix = 'Instances/' + typeGen + '/' + 'instances'
     numTache = step
@@ -47,6 +49,7 @@ def mesure_time(methode, typeGen, nbTachesMax,nbInstances, step,debug=False,*arg
             sumTime += t
         L_nbTaches.append(numTache)
         L_time.append(sumTime / (1.0 * nbInstances))
+        sumTime = 0
         numTache += step
     return L_nbTaches, L_time
 
@@ -55,18 +58,32 @@ def save_graphe_data(filename, L_nbTaches, L_time, dirname='dataGraphe/'):
         os.mkdir(dirname)
     fichier = dirname + filename
     f = open(fichier, 'w')
-    f.write(' '.join(L_nbTaches))
-    f.write(' '.join(L_time))
+    s1 = ''
+    s2 = ''
+    for i in range(len(L_time)):
+        s1 += (str)(L_time[i]) + ' '
+        s2 += (str)(L_nbTaches[i]) + ' '
+    s1 = s1[:-1]
+    s2 = s2[:-1]
+    f.write(s1 + '\n')
+    f.write(s2)
+    print('les données sont sauvegardées avec succès !')
     f.close()
     
 
-def draw(L_nbTaches, L_time):
+def draw(L_nbTaches, L_time,xlabel='nombre de taches', ylabel='temps de calcul'):
     plt.plot(L_nbTaches, L_time)
+    plt.xlabel = xlabel
+    plt.ylabel = ylabel
+    print('xlabel : ', plt.xlabel)
+    print('ylabel : ', plt.ylabel)
     plt.show()
 
 def main():
-    #L_nbTaches, L_time = mesure_time_approche(projet.Johnson, 'type1', 100, 10, 5)
-    L_nbTaches, L_time = mesure_time(arborescence.arborescence_resolve, 'type1', 10, 5, 5)
+    #L_nbTaches, L_time = mesure_time(projet.Johnson, 'type1', 200, 10, 5)
+    #save_graphe_data('Johnson', L_nbTaches, L_time)
+    L_nbTaches, L_time = mesure_time(arborescence.arborescence_resolve, 'type3', 9, 5, 1)
+    save_graphe_data('exacte_type3_b1', L_nbTaches, L_time)
     draw(L_nbTaches, L_time)
     print('L_nbTaches : ', L_nbTaches)
     print('L_time : ', L_time)
