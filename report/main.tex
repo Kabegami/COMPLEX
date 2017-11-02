@@ -20,7 +20,7 @@
 	\section*{Partie 1 : algorithme approché avec garantie de performance}
 	
 	\paragraph{Question 1.}{%On sait que  $OPT \geq max\left( d_i^A + d_i^B + d_i^C \right)$ car c'est le temps demandé par la tâche la plus longue. De plus on sait que le maximum d'une distribution est supérieur ou égal à la moyenne de cette distribution. Ainsi on observe que:
-          Quelle que soit la machine M que l'on considère, notre solution optimale fera au moins $\sum_{i=1}^nd_i^M$ car il faut que toutes les taches soient traitées sur la machine M sans tenir compte des autres machines. Il en resulte qu'on a : \\
+          Quelle que soit la machine M que l'on considère, notre solution optimale fera au moins $\sum_{i=1}^nd_i^M$ car il faut que toutes les taches soient traitées sur la machine M peu importe ce qu'il ce passe sur les autres machines. Il en resulte qu'on a : \\
           $OPT \geq \sum_{i=1}^nd_i^A$  \\
           $OPT \geq \sum_{i=1}^nd_i^B$  \\
           $OPT \geq \sum_{i=1}^nd_i^C$  \\
@@ -101,8 +101,9 @@
 			\item $P$ prend au moins $t^\pi_A$ unités de temps sur A,
 			\item on a montré que $\left(\Pi_1, k, \Pi_2\right)$ était la meilleure façon de répartir les tâches autour de $k$ sous l'hypothèse que les tâches de $\Pi_1$ ne s'attendront pas et de même pour $\Pi_2$.
 			\item De plus, on a posé aucune hypothèse sur $k$ donc dans $P$ n'importe quelle tâche de $\pi^\prime$ peut prendre le rôle de $k$.
-			\item Donc la date de fin d'ordonnancement associée à $P$ est supérieure ou égale à $b$.
+                        \item Donc pour tous k choisit cette expression est une borne inferieur de l'ordonnancement avec k à cette emplacement
 		\end{itemize}
+                De cette façon si on choisit le k qui maximise cette expression, alors on aura une borne quel que soit k.
 		}
 		
 		\paragraph{Question 6.}{On pourra suivre le même raisonnement que précédemment et en se plaçant sur les machines B et C, obtenir la borne $b_3$ suivante:
@@ -120,7 +121,17 @@
                   Soit n le nombre de taches.
                   Dans les algorithmes de la partie exacte, à chaque niveau k de l'arbre on a un ordonnancement de taille k (sauf pour le niveau 0 ou on a juste 1 noeud). Dans chaque ordonnancement la première tache à n valeurs possibles la seconde n-1 et ainsi de suite. Le nombre de noeud est exponentiellement grand. De ce fait on prendra uniquement des instances de taille 9 maximum. \\
                   Le choix de la solution initiale comme borne est très important et peut réduire considérablement le temps de calcul.
+                }
+                \paragraph{graphes et observations}{
+
+                  Dans ce projet on utilisera type1 pour designer les données non-corrélées, type2 pour les corrélation sur les durées d'exécution et type3 pour Corrélation sur les machines.\\
+
+                  \includegraphics{graphes/exacte_b1.png}
+                  On remarque que le temps de calcul pour le type 3(Corrélation sur les machines) est nettement plus important que pour les autres. Cela s'explique par le fait que les taches avec les durées les plus longues sont situées sur la machine C. De ce fait la borne bA est trop optimiste donc ne va pas prise par le max, de meme pour la borne bC. Il reste uniquement la borne bC qui devient réaliste seulement que l'ordonancement $\pi$ est grand donc il faut explorer l'arbre en profondeur afin d'avoir des élagages ce qui explique que la lenteur du type 3.
                   
+                }
+                \paragraph{}{
+                                    \includegraphics{graphes/node_b1.png}
                   }
                   
 \end{document}

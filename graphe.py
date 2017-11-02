@@ -28,6 +28,25 @@ def getData(filename):
     M = np.array(t2)
     return nbTaches, M
 
+def read_graphe_file(*Lfilename):
+    dirname = 'dataGraphe/'
+    L = []
+    time = []
+    cpt = 1
+    for filename in Lfilename:
+        fichier = dirname + filename
+        f = open(fichier, 'r')
+        for line in f:
+            if cpt % 2 != 0 or cpt == 2:
+                L.append([float(x) for x in line.split(' ')])
+            cpt += 1
+        f.close()
+    L_nbTaches = L[1]
+    print(L_nbTaches)
+    del L[1]
+    return L_nbTaches, L   
+    
+
 def mesure_time(methode, typeGen, nbTachesMax,nbInstances, step, debug=False,*args):
     print('args : ', args)
     prefix = 'Instances/' + typeGen + '/' + 'instances'
@@ -36,6 +55,7 @@ def mesure_time(methode, typeGen, nbTachesMax,nbInstances, step, debug=False,*ar
     L_nbTaches = []
     sumTime = 0
     while (numTache <= nbTachesMax):
+        #print('numTache : ', numTache)
         directory = prefix + (str)(numTache) + '/'
         if debug:
             print('directory : ', directory)
@@ -44,8 +64,7 @@ def mesure_time(methode, typeGen, nbTachesMax,nbInstances, step, debug=False,*ar
             if debug:
                 print('filename : ', filename)
             n, M = getData(filename)
-            if debug:
-                print('n : ', n)
+            print('n : ', n)
             t = getTime(methode, n, M,*args)
             sumTime += t
         L_nbTaches.append(numTache)
@@ -53,6 +72,32 @@ def mesure_time(methode, typeGen, nbTachesMax,nbInstances, step, debug=False,*ar
         sumTime = 0
         numTache += step
     return L_nbTaches, L_time
+
+def mesure_node(methode, typeGen, nbTachesMax, nbInstances, step, debug=False, *args):
+    print('args : ', args)
+    prefix = 'Instances/' + typeGen + '/' + 'instances'
+    numTache = step
+    L_cpt = []
+    L_nbTaches = []
+    sumCpt = 0
+    while (numTache <= nbTachesMax):
+        #print('numTache : ', numTache)
+        directory = prefix + (str)(numTache) + '/'
+        if debug:
+            print('directory : ', directory)
+        for i in range(nbInstances):
+            filename = directory + 'test' + (str)(i)
+            if debug:
+                print('filename : ', filename)
+            n, M = getData(filename)
+            print('n : ', n)
+            cpt =  methode(n, M,*args)
+            sumCpt += cpt
+        L_nbTaches.append(numTache)
+        L_cpt.append(sumCpt / (1.0 * nbInstances))
+        sumCpt = 0
+        numTache += step
+    return L_nbTaches, L_cpt   
 
 def save_graphe_data(filename, L_nbTaches, L_time, dirname='dataGraphe/'):
     if not(os.path.exists(dirname)):
@@ -74,10 +119,18 @@ def save_graphe_data(filename, L_nbTaches, L_time, dirname='dataGraphe/'):
 
 def draw(L_nbTaches, L_time,xlabel='nombre de taches', ylabel='temps de calcul'):
     plt.plot(L_nbTaches, L_time)
-    plt.xlabel = xlabel
-    plt.ylabel = ylabel
-    print('xlabel : ', plt.xlabel)
-    print('ylabel : ', plt.ylabel)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.show()
+
+def multipledraw(L_nbTaches, M_cpt,xlabel='nombre de taches', ylabel='temps de calcul',courbe_label='type'):
+    i = 1
+    for L_cpt in M_cpt:
+        plt.plot(L_nbTaches, L_cpt,label=courbe_label + (str)(i))
+        i += 1 
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.legend()
     plt.show()
 
 
@@ -99,14 +152,25 @@ def verifComplexite(L_nbTaches, L_time):
     draw(t1,t2)
 
 def main():
+    #test()
     #L_nbTaches, L_time = mesure_time(projet.Johnson, 'type1', 200, 10, 5)
     #save_graphe_data('Johnson/n²', L_nbTaches, L_time)
-    #L_nbTaches, L_time = mesure_time(arborescence.arborescence_resolve, 'type3', 9, 5, 1)
+    #L_nbTaches, L_time = mesure_time(arborescence.arborescence_resolve, 'type3', 5, 5, 1)
     #save_graphe_data('exacte_type3_b1', L_nbTaches, L_time)
-    L_nbTaches, L_time = mesure_time(arborescence.arborescence_mix, 'type1', 9, 5, 1)
-    save_graphe_data('mix_type1_b1', L_nbTaches, L_time)
-    draw(L_nbTaches, L_time)
-    print('L_nbTaches : ', L_nbTaches)
-    print('L_time : ', L_time)
+    #L_nbTaches, L_time = mesure_time(arborescence.arborescence_mix, 'type3', 9, 5, 1)
+    #save_graphe_data('mix_type3_b1', L_nbTaches, L_time)
+    #draw(L_nbTaches, L_time)
+    #print('L_nbTaches : ', L_nbTaches)
+    #print('L_time : ', L_time)
+    L_nbTaches, M = read_graphe_file('node_type1_b1', 'node_type2_b1', 'node_type3_b1')
+    multipledraw(L_nbTaches, M,'nombre de taches','nombre de noeuds')
+    #draw(L_nbTaches, M)
+    #print(M)
+    #L_nbTaches, L_cpt = mesure_node(arborescence.get_noeud_explore, 'type3', 7, 5, 1)
+    #print('L_nbTaches : ', L_nbTaches)
+    #print('L_cpt : ', L_cpt)
+    #save_graphe_data('node_type3_b1', L_nbTaches, L_cpt)
+    #draw(L_nbTaches, L_cpt,'nombre de taches','nombre de noeuds')
+    
 
 main()

@@ -130,8 +130,8 @@ class Arbre(object):
         #A chaque hauteur de notre arbre, on a un ordonnancement de taille h.
         #La premiere case à nbTaches choix la suivant nbTaches -1 et ainsi de suite
         total = 1
-        for hauteur in range(1, (int)(nbTaches)+1):
-            choix = nbTaches
+        for hauteur in range(1, (int)(self.nbTaches)+1):
+            choix = self.nbTaches
             n = 1
             for i in range(hauteur):
                 n = n * choix
@@ -154,15 +154,31 @@ def arborescence_resolve(nbTaches, matrice, b=bornes.b1,v=False):
     tree.accuracy(v)
     return P, res
 
-def arborescence_mix(nbTaches, matrice, b=bornes.b1,v=False):
+def arborescence_mix(nbTaches, matrice, b=bornes.b1,debug=False):
     P1 = projet.Johnson(nbTaches, matrice)
     c = circuit.Circuit(P1, matrice)
     v = c.resolve()
+    taches = [i for i in range((int)(nbTaches))]
     tree = Arbre(taches, matrice, b)
     tree.borneSup = [v]
     P,res = tree.resolve()
-    tree.accuracy(v)
+    tree.accuracy(debug)
     return P, res
+
+def get_noeud_explore(nbTaches, matrice, b=bornes.b1):
+    taches = [i for i in range((int)(nbTaches))]
+    tree = Arbre(taches, matrice, b)
+    tree.resolve()
+    #print('tree.cpt : ', tree.cpt)
+    return tree.cpt
+
+def get_accuracy(nbTaches, matrice, b=bornes.b1):
+    taches = [i for i in range((int)(nbTaches))]
+    tree = Arbre(taches, matrice, b)
+    tree.resolve()
+    #print('tree.cpt : ', tree.cpt)
+    return tree.accuracy()
+
 
 def combinaison(k,n):
     return (math.factorial(n) / (1.0 * math.factorial(k) * math.factorial(n -k)))
