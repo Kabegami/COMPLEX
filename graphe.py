@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import math
 import os
 import time
 import circuit
@@ -11,7 +12,7 @@ plt.rcParams['backend'] = "Qt4Agg"
 
 def getTime(function, *args):
     start = time.time()
-    res = function(*args)
+    function(*args)
     #print('res : ', res)
     end = time.time()
     return end - start
@@ -79,11 +80,31 @@ def draw(L_nbTaches, L_time,xlabel='nombre de taches', ylabel='temps de calcul')
     print('ylabel : ', plt.ylabel)
     plt.show()
 
+
+def test():
+    L1 = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+    L2 = list(map(lambda x: x**2, L1))
+    print(L1)
+    print(L2)
+    verifComplexite(L1, L2)
+    
+def verifComplexite(L_nbTaches, L_time):
+    t1 = L_nbTaches[::]
+    t2 = L_time[::]
+    for i in range(len(t2)):
+        n = t1[i]
+        t2[i] = math.log(t1[i])
+    q = math.sqrt((t2[3] - t2[2])**2 + (t2[3] - t1[2]) ** 2)
+    print('q : ', q)
+    draw(t1,t2)
+
 def main():
     #L_nbTaches, L_time = mesure_time(projet.Johnson, 'type1', 200, 10, 5)
-    #save_graphe_data('Johnson', L_nbTaches, L_time)
-    L_nbTaches, L_time = mesure_time(arborescence.arborescence_resolve, 'type3', 9, 5, 1)
-    save_graphe_data('exacte_type3_b1', L_nbTaches, L_time)
+    #save_graphe_data('Johnson/n²', L_nbTaches, L_time)
+    #L_nbTaches, L_time = mesure_time(arborescence.arborescence_resolve, 'type3', 9, 5, 1)
+    #save_graphe_data('exacte_type3_b1', L_nbTaches, L_time)
+    L_nbTaches, L_time = mesure_time(arborescence.arborescence_mix, 'type1', 9, 5, 1)
+    save_graphe_data('mix_type1_b1', L_nbTaches, L_time)
     draw(L_nbTaches, L_time)
     print('L_nbTaches : ', L_nbTaches)
     print('L_time : ', L_time)

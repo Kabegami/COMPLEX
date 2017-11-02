@@ -3,9 +3,15 @@
 import numpy as np
 import bornes
 import circuit
-#import queue
+import sys
 #Pour python2 utiliser Queue et non queue
-import Queue as queue
+version = sys.version_info[0]
+if version == 2:
+    import Queue as queue
+else:
+    import queue
+import projet
+import math
 
 def read_file(fichier):
     f = open(fichier, 'r')
@@ -59,6 +65,7 @@ class Arbre(object):
         self.f_borneInf = f_borneInf
         self.taches = taches
         self.nbTaches = len(taches)
+        self.cpt = 0
         self.LNode = []
         self.LNode.append(Noeud([], matrice,taches, f_borneInf, self.borneSup))
 
@@ -103,6 +110,7 @@ class Arbre(object):
                 P.append(res)
                 Lrestantes = (node.Lrestantes)[::]
                 Lrestantes.remove(res)
+                self.cpt += 1
                 new = Noeud(P, self.matrice, Lrestantes, self.f_borneInf, self.borneSup)
                 if debug:
                     print("creation du noeud :", new)
@@ -110,19 +118,56 @@ class Arbre(object):
 
     def resolve(self,v=False):
         cpt = 0
+        self.cpt = 0
         while self.LNode != []:
             self.expend(v)
             if v:
-                print('appel de resolve numero : {}'.format(cpt))
-                cpt += 1
+                print('appel de resolve numero : {}'.format(self.cpt))
+            cpt += 1
         return self.bestP, self.borneSup[0]
 
-def arborescence_resolve(nbTaches, matrice, b=bornes.b1):
+    def accuracy(self,debug=False):
+        #A chaque hauteur de notre arbre, on a un ordonnancement de taille h.
+        #La premiere case à nbTaches choix la suivant nbTaches -1 et ainsi de suite
+        total = 1
+        for hauteur in range(1, (int)(nbTaches)+1):
+            choix = nbTaches
+            n = 1
+            for i in range(hauteur):
+                n = n * choix
+                choix -= 1
+            #print('n : ', n)
+            total += n
+        #print('self.cpt : ', self.cpt)
+        explore = (self.cpt / (1.0 * total))
+        if debug:
+            print("l'arbre possede {} noeuds".format(total))
+            print("notre algorithme à explorer : {} noeuds".format(self.cpt))
+            print("il a donc exploré : {} % de l'arbre".format((int)(explore * 100)))
+        return 1 - explore
+
+def arborescence_resolve(nbTaches, matrice, b=bornes.b1,v=False):
     print('nbTaches : ', nbTaches)
-    taches = [i for i in range(nbTaches)]
+    taches = [i for i in range((int)(nbTaches))]
     tree = Arbre(taches, matrice, b)
     P, res = tree.resolve()
-    return P
+    tree.accuracy(v)
+    return P, res
+
+def arborescence_mix(nbTaches, matrice, b=bornes.b1,v=False):
+    P1 = projet.Johnson(nbTaches, matrice)
+    c = circuit.Circuit(P1, matrice)
+    v = c.resolve()
+    tree = Arbre(taches, matrice, b)
+    tree.borneSup = [v]
+    P,res = tree.resolve()
+    tree.accuracy(v)
+    return P, res
+
+def combinaison(k,n):
+    return (math.factorial(n) / (1.0 * math.factorial(k) * math.factorial(n -k)))
+    
+
         
 
 if __name__ == "__main__":
@@ -137,10 +182,16 @@ if __name__ == "__main__":
     matrice = np.array(t2)
     print(matrice)
     #tree = Arbre(taches, matrice, bornes.b1)
-    tree = Arbre(taches, matrice, bornes.b2)
-    P, sol = tree.resolve(True)
+    #tree = Arbre(taches, matrice, bornes.b2)
+    #P, sol = tree.resolve(True)
+    #print('P : ', P)
+    #print('valeur de la solution optimale : ', sol)
+    #c = circuit.Circuit(P, matrice)
+    #res = c.resolve()
+    #print('resultat du circuit : ', res)
+    #accuracy = tree.accuracy(True)
+    #print('accuracy : ' ,accuracy)
+    P, sol = arborescence_mix(nbTaches, matrice, bornes.b2,True)
+    #P,sol = arborescence_resolve(nbTaches, matrice, bornes.b1, True)
     print('P : ', P)
     print('valeur de la solution optimale : ', sol)
-    c = circuit.Circuit(P, matrice)
-    res = c.resolve()
-    print('resultat du circuit : ', res)

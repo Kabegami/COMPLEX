@@ -115,5 +115,12 @@
 		\paragraph{Question 8.}{On peut appliquer cette méthode arborescente et calculer les bornes quelque soit le nombre $k$ de machines. Cependant, plus on considère de machines, moins les bornes obtenues seront utiles car elles seront trop petites (trop optimistes) pour atteindre les conditions d'élaguage. 		
 		}
 		
-	\section*{Partie 3: Mise en oeuvre}		
+	        \section*{Partie 3: Mise en oeuvre}
+		\paragraph{Notes expérimentales}{Il semble que la borne b2 retourne une valeur plus faible de manière générale, de ce fait on coupe moins de noeud. En revanche elle est plus rapide à calculer. Sur l'exemple test3 , avec la borne b2 on explore 87 pourcent de l'arbre alors que la borne b1 nous fait exploré 76 pourcent de l'arbre. \\
+                  Soit n le nombre de taches.
+                  Dans les algorithmes de la partie exacte, à chaque niveau k de l'arbre on a un ordonnancement de taille k (sauf pour le niveau 0 ou on a juste 1 noeud). Dans chaque ordonnancement la première tache à n valeurs possibles la seconde n-1 et ainsi de suite. Le nombre de noeud est exponentiellement grand. De ce fait on prendra uniquement des instances de taille 9 maximum. \\
+                  Le choix de la solution initiale comme borne est très important et peut réduire considérablement le temps de calcul.
+                  
+                  }
+                  
 \end{document}

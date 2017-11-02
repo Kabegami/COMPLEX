@@ -116,32 +116,12 @@ def b1(pi, matrice,v=False):
     bC = borneC(pi, matrice,v)
     return max(bA,bB,bC)
 
-def b2(pi, matrice,v=False):
-    #la borne 2 est trop optimiste du coup quand on est dans une feuille, on a une mauvaise estimation
-    s = 0
+def b2k(pi, matrice,tA, k):
+    s = tA
+    #ajout de la tache k
+    s += np.sum(matrice[:, k])
     machineA = matrice[0]
-    machineB = matrice[1]
     machineC = matrice[2]
-    tA = 0
-    for i in range(len(machineA)):
-        if i in pi:
-          tA += machineA[i]
-    s += tA
-    #si il n'y a pas de pi
-    if len(pi) == len(machineA):
-        return s
-    #on selectionne k n'appartenant pas a P
-    t = len(machineA) - 1
-    k = random.randint(0, t)
-    while k in pi:
-        k = random.randint(0, t)
-
-    if v:
-        print('taille : ', len(machineA) -1)
-        print('k : ', k)
-        print('vecteur k : ', matrice[:,k])
-    s += np.sum(matrice[:,k])
-    
     for i in range(len(machineA)):
         if i not in pi and i != k:
             if machineA[i] < machineC[i]:
@@ -149,7 +129,66 @@ def b2(pi, matrice,v=False):
             else:
                 s +=machineC[i]
     return s
-    
+
+def b2(pi, matrice,v=False):
+    #la borne 2 est trop optimiste du coup quand on est dans une feuille, on a une mauvaise estimation
+    s = 0
+    machineA = matrice[0]
+    machineB = matrice[1]
+    machineC = matrice[2]
+    tA = 0
+    piPrime = []
+    for i in range(len(machineA)):
+        if i in pi:
+          tA += machineA[i]
+        else:
+            piPrime.append(i)
+    s += tA
+    #si il n'y a pas de piPrime
+    if len(pi) == len(machineA):
+        return s
+    #on selectionne k n'appartenant pas a P
+    maxi = -1 * float('inf')
+    for k in piPrime:
+        maxi = max(maxi, b2k(pi, matrice, tA, k))
+    if v:
+        print('taille : ', len(machineA) -1)
+        print('k : ', k)
+        print('vecteur k : ', matrice[:,k])
+        print('maxi : ', maxi)
+    s = maxi
+    return s
+
+def b3k(pi, matrice, tB, k, v=False):
+    s = tB
+    machineB = matrice[1]
+    machineC = matrice[2]
+    if v:
+        print('k : ', k)
+        print('machineB : ', machineB)
+    s += machineB[k] + machineC[k]
+    for i in range(len(machineB)):
+        if i not in pi and i != k:
+            if machineB[i] < machineC[i]:
+                s += machineB[i]
+            else:
+                s +=machineC[i]
+    return s
+
+def b3(pi, matrice,v=False):
+    c = circuit.Circuit2M(pi, matrice)
+    tB = c.resolve()
+    maxi = -1 * float('inf')
+    if len(pi) == len(matrice[1]):
+        return tB
+    for i in range(len(matrice[0])):
+        if i not in pi:
+            maxi = max(maxi, b3k(pi, matrice, tB, i, v))
+    s = maxi
+    return s
+
+def borneMax(pi, matrice):
+    return max(b1(pi, matrice), b2(pi,matrice), b3(pi, matrice))
 
 def main():
     t1, t2 = read_file('Instances/exempleProf/test3.txt')
@@ -163,7 +202,11 @@ def main():
     print('ba : ', ba)
     print('bB : ', bB)
     print('bC : ', bC)
-    borne2 = b2([0], matrice,True)
+    borne1 = b1([0], matrice)
+    print('borne 1 :' , borne1)
+    borne2 = b2([0], matrice)
     print('borne2 : ', borne2)
+    borne3 = b3([0], matrice)
+    print('borne3 : ', borne3)
 
 #main()
