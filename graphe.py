@@ -76,6 +76,21 @@ def mesure_time(methode, typeGen, nbTachesMax,nbInstances, step, debug=False,*ar
         numTache += step
     return L_nbTaches, L_time
 
+def compare_methodes(methode1, methode2, name1, name2, nbTachesMax, nbInstances, step):
+    L_label= ['',"Données non-corrélées", "Corrélation sur les durées d'éxécution", "Corrélation sur les machines"]
+    for i in range(1,4):
+        data_type = 'type' + (str)(i)
+        L_nbTaches, L_time1 = mesure_time(methode1,data_type, nbTachesMax, nbInstances, step)
+        L_nbTaches, L_time2 = mesure_time(methode2,data_type, nbTachesMax, nbInstances, step)
+        plt.plot(L_nbTaches, L_time1, label=L_label[i] + ' ' + name1)
+        plt.plot(L_nbTaches, L_time2, label=L_label[i] + ' ' + name2)
+    plt.xlabel('Nombre de taches')
+    plt.ylabel('Temps de calcul')
+    plt.legend()
+    plt.show()
+        
+    
+
 def mesure_node(methode, typeGen, nbTachesMax, nbInstances, step, debug=False, *args):
     print('args : ', args)
     prefix = 'Instances/' + typeGen + '/' + 'instances'
@@ -232,7 +247,8 @@ def main():
     #print('q : ', q)
     #build_graphe(approche.branch_and_greed,'branch_and_greed',20,5,5,'nombre de taches', 'temps de calcul', 'type', 10)
     #build_graphe(arborescence.arborescence_mix, 'b2', 8,5,1,'nombre de taches', 'temps de calcul', 'type', bornes.borneMax)
-    graphe_approximation(projet.Johnson, "approché vs exact", 8, 5 , 1)
+    #graphe_approximation(projet.Johnson, "approché vs exact", 8, 5 , 1)
+    compare_methodes(arborescence.arborescence_mix, arborescence.arborescence_resolve, 'initialisation', 'sans initialisation',7,5,1)
     #L_nbTaches, L_time = mesure_time(projet.Johnson, 'type3', 200, 10, 5)
     #save_graphe_data('Johnson_type3', L_nbTaches, L_time)
     #L_nbTaches, L_time = mesure_time(arborescence.arborescence_resolve, 'type3', 5, 5, 1)

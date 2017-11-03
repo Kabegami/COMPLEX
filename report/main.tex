@@ -200,7 +200,7 @@
                   Dans ce projet on utilisera type1 pour designer les données non-corrélées, type2 pour les corrélation sur les durées d'exécution et type3 pour corrélation sur les machines.\\
 
                   \includegraphics{graphes/exacte_b1.png}
-                  
+                  Autres graphes représentant la methode de branch and bound avec la borne b1, mais cette fois ci jusu'a 9 taches ou la différence ce fait bien plus nette.
                   
                 }
                 \paragraph{}{
@@ -217,17 +217,18 @@
                 \paragraph{}{
                   Soit methode1 , la methode arborescente en initialisant la borne supérieur à $\inf$.
                   Soit methode2 , la methode arborescente en initialisant la borne supérieur avec le résultat de l'algorithme de Johnson
+                  \begin{figure}[H]
+			\centering
+			\includegraphics[width=0.85\linewidth]{graphes/initialisation.png}
+			\caption{Comparaison des algorithme avec ou sans initialisation}
+			\label{fig:tj}
+		  \end{figure}
+                  On remarque que les arbres ou l'on initialise la borne supérieur avec le resultat de l'algorithme de Johnson sont plus rapide pour calculer l'ordonnancement optimal que les autres.
+
                   
-                  \includegraphics{graphes/exacte_vs_mix_type1.png}
-                  }
-                Pour le type 1
-                \paragraph{}{
-                  \includegraphics{graphes/exact_vs_mix_type2.png}
-                  Pour le type 2
                 }
-                \paragraph{}{
-                  \includegraphics{graphes/exact_vs_mix_type3.png}
-                  Pour le type 3
-                }
+
+                \paragraph{Conclusion}{
+                  Le choix des bornes est une étape crucial car ce sont elle qui nous permettent d'avoir un algorithme efficace mais c'est aussi difficile car il y a un compromis à faire entre le temps de calcul de la borne et sa qualité ( le nombre de noeud qu'elle permet d'élaguer)
                   
 \end{document}
