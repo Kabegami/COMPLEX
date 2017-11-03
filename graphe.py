@@ -7,6 +7,7 @@ import circuit
 import projet
 import arborescence
 import numpy as np
+import bornes
 import matplotlib.pyplot as plt
 plt.rcParams['backend'] = "Qt4Agg"
 
@@ -97,7 +98,56 @@ def mesure_node(methode, typeGen, nbTachesMax, nbInstances, step, debug=False, *
         L_cpt.append(sumCpt / (1.0 * nbInstances))
         sumCpt = 0
         numTache += step
-    return L_nbTaches, L_cpt   
+    return L_nbTaches, L_cpt
+
+def mesure_approximation(methode, typeGen, nbTachesMax, nbInstances, step, debug=False):
+    #print('args : ', args)
+    prefix = 'Instances/' + typeGen + '/' + 'instances'
+    numTache = step
+    L_exacte = []
+    L_res = []
+    L_nbTaches = []
+    sumRes = 0
+    sumExacte = 0
+    while (numTache <= nbTachesMax):
+        #print('numTache : ', numTache)
+        directory = prefix + (str)(numTache) + '/'
+        if debug:
+            print('directory : ', directory)
+        for i in range(nbInstances):
+            filename = directory + 'test' + (str)(i)
+            if debug:
+                print('filename : ', filename)
+            n, M = getData(filename)
+            print('n : ', n)
+            P =  methode(n, M)
+            c = circuit.Circuit(P, M)
+            res = c.resolve()
+            opt, exacte = arborescence.arborescence_mix(n, M)
+            sumRes += res
+            sumExacte += exacte
+        L_nbTaches.append(numTache)
+        L_exacte.append(2*(sumExacte / (1.0*nbInstances)))
+        L_res.append(sumRes / (1.0*nbInstances))
+        sumCpt = 0
+        sumExacte = 0
+        numTache += step
+    return L_nbTaches, L_res, L_exacte
+
+def graphe_approximation(methode, name, numMax, nbInstances, step, xlabel='nombre de taches', ylabel="resultat de l'ordonnancement", courbe_label="type"):
+    prefix = 'type'
+    M = []
+    for i in range(1,4):
+        data_type = prefix + (str)(i)
+        L_nbTaches, L_res, L_exacte = mesure_approximation(methode, data_type, numMax, nbInstances, step)
+        #s = name + '_' + data_type
+        plt.plot(L_nbTaches, L_res, label=data_type + ' Johnson')
+        plt.plot(L_nbTaches, L_exacte, label=data_type + ' 2*opt')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.legend()
+    plt.show()
+    
 
 def save_graphe_data(filename, L_nbTaches, L_time, dirname='dataGraphe/'):
     if not(os.path.exists(dirname)):
@@ -151,23 +201,27 @@ def verifComplexite(L_nbTaches, L_time):
     print('q : ', q)
     draw(t1,t2)
 
-def build_graphe(methode,name, numMax ,nbInstances, step, xlabel='nombre de taches', ylabel='temps de calcul', courbe_label='type'):
+def build_graphe(methode,name, numMax ,nbInstances, step, xlabel='nombre de taches', ylabel='temps de calcul', courbe_label='type',*args):
     prefix = 'type'
     L = []
     M = []
     for i in range(1,4):
         data_type = prefix + (str)(i)
-        L_nbTaches, L_time = mesure_time(methode, data_type, numMax, nbInstances, 5)
+        L_nbTaches, L_time = mesure_time(methode, data_type, numMax, nbInstances, step,*args)
         s = name + '_' + data_type
         L.append(s)
         M.append(L_time)
         save_graphe_data(s,L_nbTaches, L_time)
+    print('L : ', L_nbTaches)
+    print('M: ', M)
     multipledraw(L_nbTaches, M, xlabel, ylabel, courbe_label)
     
 
 def main():
     #test()
-    build_graphe(projet.Johnson,'Johnson',400,10,5)
+    #build_graphe(projet.Johnson,'Johnson',400,10,1)
+    #build_graphe(arborescence.arborescence_mix, 'b2', 8,5,1,'nombre de taches', 'temps de calcul', 'type', bornes.borneMax)
+    graphe_approximation(projet.Johnson, "approché vs exact", 8, 5 , 1)
     #L_nbTaches, L_time = mesure_time(projet.Johnson, 'type3', 200, 10, 5)
     #save_graphe_data('Johnson_type3', L_nbTaches, L_time)
     #L_nbTaches, L_time = mesure_time(arborescence.arborescence_resolve, 'type3', 5, 5, 1)
@@ -177,8 +231,8 @@ def main():
     #draw(L_nbTaches, L_time)
     #print('L_nbTaches : ', L_nbTaches)
     #print('L_time : ', L_time)
-    #L_nbTaches, M = read_graphe_file('Johnson_type1', 'Johnson_type2', 'Johnson_type3')
-    #multipledraw(L_nbTaches, M,'nombre de taches','temps de calcul')
+    #L_nbTaches, M = read_graphe_file('exacte_type1_b1', 'mix_type1_b1')
+    #multipledraw(L_nbTaches, M,'nombre de taches','temps de calcul', 'methode')
     #draw(L_nbTaches, M)
     #print(M)
     #L_nbTaches, L_cpt = mesure_node(arborescence.get_noeud_explore, 'type3', 7, 5, 1)
