@@ -131,41 +131,32 @@ Soit un noeud $n$ avec un ordonnancement partiel $P$. Afin d'évaluer un noeud, 
         \item Tant que l'on a pas un ordonnancement final: à chaque étape de l'algorithme, dans un noeud $n$, on évalue chacun de ses fils et on prend celui qui a la plus petite valeur et qui devient notre noeud courant.
     \end{itemize}
     
-    
         \emph{Remarque}: pour le nombre $k$ d'évaluation d'un noeud, on choisit de prendre $k = \min(borne,(taille P)!)$ de cette façon si le nombre de noeuds est suffisament petit, l'algorithme les explore tous et il est limité quand on a un nombre trop important. De ce fait pour les petits ordonnancements, il retourne une solution optimale si le nombre de noeuds total est inférieur à la borne.
 
-        \begin{figure}[H]
+        \begin{figure}[h]
 		\centering
-		\includegraphics[width=0.85\linewidth]{graphes/res_greed.png}
+		\includegraphics[width=0.75\linewidth]{graphes/res_greed.png}
 		\caption{Mesure de resultat avec l'algorithme approché}
-		\label{fig:bag}
+		\label{fig:res_greed}
 	\end{figure}
-        Les courbes de l'algorithme approché et la solution optimale sont confondus pour de petites instances ce qui ilustre mon propos précédent.
-
-    \begin{figure}[H]
-		\centering
-		\includegraphics[width=0.85\linewidth]{graphes/branch_and_greed.png}
-		\caption{Mesure de performance de l'algorithme approché avec borne=10}
-		\label{fig:bag}
-    \end{figure}
-    On observe que l'algorithme approché est plus rapide que le branch and bound mais plus lent que l'algorithme de Jonhson. Pour de petites instances, l'algorithme approché donne des solutions plus précise donc il vaut mieux l'utiliser, mais quand on passe à de plus grande instances de part ça rapidité il faut prendre l'algorithme de Johnson
+	Dans la figure~\ref{fig:res_greed}, on voit bien que les solutions de l'algorithme approché et les solutions optimales exactes sont les mêmes pour des petites instances.
 }
 	
 	\section*{Partie 3: Mise en oeuvre}
 		\subsection*{Algorithme approché avec Johnson}
 		
-		On s'intéresse tout d'abord aux performances de l'algorithme approché implémenté en Python. On observe dans la figure~\ref{fig:tj} que le temps de calcul ne varie pas selon le type de donnée ce qui est logique car la selection du max se fait en $O(n)$ peu importe la durée des tâches. De plus, on remarque que sa complexité est de $O(n^2)$ comme montré dans la partie théorique.
+		On s'intéresse tout d'abord aux performances de l'algorithme approché avec Johnson, implémenté en Python. On observe dans la figure~\ref{fig:tj} que le temps de calcul ne varie pas selon le type de donnée ce qui est logique car la selection du min se fait en $O(n)$ peu importe la durée des tâches. De plus, sa complexité semble être de $O(n^2)$ comme montré dans la partie théorique.
 		
 		Les données visibles en figure~\ref{fig:tj} correspondent à des moyennes de temps de résolution sur 50 instances différentes pour chaque nombre de tâches mesuré.
 		
 		\begin{figure}[H]
 			\centering
-			\includegraphics[width=0.85\linewidth]{graphes/Johnson.png}
+			\includegraphics[width=0.75\linewidth]{graphes/Johnson.png}
 			\caption{Mesure de performance de l'algorithme Johnson}
 			\label{fig:tj}
 		\end{figure}
 
-                Pour verifier que la complexité est bien $O(n^2)$ on procède de la manière suivante : on fait l'hypothèse que nous avons une fonction polynomiale de la forme $f(x) = \lambda x^p$ avec $\lambda$ et $p$ appartenant à $\mathbb{R}$. De ce fait en passant au log on obtient : $log(f(x)) = log(\lambda) + p \times log(x)$ avec $log(\lambda)$ une constante. De ce fait, en tracant $log(f(x))$ en fonction de $log(x)$ (figure~\ref{fig:verifComp}) et en calculant la pente on obtient $p$, c'est à dire la puissance de notre polynome.
+        Pour verifier que la complexité est bien en $O(n^2)$ on procède de la manière suivante : on fait l'hypothèse que nous avons une fonction polynomiale de la forme $f(x) = \lambda x^p$ avec $\lambda$ et $p$ appartenant à $\mathbb{R}$. De ce fait en passant au log on obtient : $log(f(x)) = log(\lambda) + p \times log(x)$ avec $log(\lambda)$ une constante. De ce fait, en tracant $log(f(x))$ en fonction de $log(x)$ (figure~\ref{fig:verifComp}) et en calculant la pente on obtient $p$, c'est à dire la puissance de notre polynome.
 
        	\begin{figure}[H]
 			\centering
@@ -182,65 +173,58 @@ Soit un noeud $n$ avec un ordonnancement partiel $P$. Afin d'évaluer un noeud, 
 			\end{subfigure}
 		\end{figure}
                 En procédant ainsi on obtient $p = 1.14227148219$, ce qui est contraire à notre afirmation théorique. Cela peut être dû à la façon de trouver le plus petit élément de la matrice des tâches par \texttt{numpy} qui est optimisé, notamment avec du calcul distribué.
-		
-		\begin{figure}[H]
-			\centering
-			\includegraphics[width=0.8\linewidth]{graphes/validite_Johnson.png}
-			\caption{Verification de la validité de Johnson}
-			\label{fig:validiteJ}
-		\end{figure}
                 	
 		Pour vérifier que l'algorithme approché retourne le bon résultat on trace son resultat et $2 \times OPT$ pour tous les types de donnés. Pour chaque type de donnée, on observe que la courbe associée à l'algorithme de Johnson est bien en dessous de $2 \times OPT$, donc notre algorithme semble valide (voir figure~\ref{fig:validiteJ}).
 		
-		\subsection*{Méthode exacte}
-		
-	L'algorithme correspondant à la méthode arborescente a été implémenté en Python. Pour mesurer ses performances, on a d'abord mesuré le temps de résolution moyen pour des instances de taille croissante comme pour Johnson. Cela étant, les temps de résolution étant particulièrement longs pour des grandes instances, on borne le nombre maximal de tâches à 6. La figure~\ref{fig:temps_exact} présente les mesures réalisées avec les bornes inférieures $b_1$ et $\max\left\{ b_1, b_2, b_3 \right\}$ étudiées en partie théorique.
+		On procède également à une mesure de précision de cette méthode approchée dans la figure ~\ref{fig:accuracy}. Sans surprise, plus le nombre de tâches est grand plus la précision de la solution retournée est différente de la solution optimale.
 		
 		\begin{figure}[h]
 			\centering
-			\includegraphics[width=0.85\linewidth]{graphes/time_exact_20iter_b1bmax.png}
+			\includegraphics[width=0.75\linewidth]{graphes/accuracy_app_exa.png}
+			\caption{Mesure de précision de la méthode approchée}
+			\label{fig:accuracy}
+		\end{figure}
+		
+		\subsection*{Méthode exacte: Branch and Bound}
+		
+	L'algorithme correspondant à la méthode arborescente a été implémenté en Python. Pour mesurer ses performances, on a d'abord mesuré le temps de résolution moyen pour des instances de taille croissante comme pour Johnson. Cela étant, les temps de résolution étant particulièrement longs pour des grandes instances (le nombre de noeuds possibles étant exponentiel), on borne le nombre maximal de tâches à 9 dans les mesures suivantes. La figure~\ref{fig:temps_exact} présente les mesures réalisées avec les bornes inférieures $b_1$ et $\max\left\{ b_1, b_2, b_3 \right\}$ étudiées en partie théorique (moyennes de temps sur 20 instances différentes).
+		
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width=0.75\linewidth]{graphes/time_exact_20iter_b1bmax.png}
 			\caption{Mesure de performance de la méthode arborescente}
 			\label{fig:temps_exact}
 		\end{figure}
 		
 	        On remarque, dans la figure~\ref{fig:temps_exact}, que le temps de calcul pour les données avec corrélation sur machines est nettement plus important que pour les autres. Cela s'explique par le fait que durées les plus longues sont situées sur la machine C. De ce fait la borne $b^\pi_A$ de $b_1$ est trop optimiste donc ne va pas être prise par le max ($b_1 = \max\left\{b^\pi_A, b^\pi_B, b^\pi_C\right\}$), de meme pour la borne $b^\pi_B$. Il reste uniquement la borne $b^\pi_C$ qui devient réaliste seulement que l'ordonnancement $\pi$ est grand donc il faut explorer l'arbre en profondeur afin d'avoir des élagages ce qui explique que la lenteur de l'algorithme pour ce type de données.
-
-        \begin{figure}[h]
-			\centering
-			\includegraphics[width=0.85\linewidth]{graphes/b1.png}
-			\caption{Autres graphes représentant la methode de branch and bound avec la borne $b_1$, mais cette fois-ci jusqu'à 9 tâches où la différence se fait bien plus nette.}
-			\label{fig:b1}
-		\end{figure}
 		
-		\paragraph{Notes expérimentales}{
-                  Soit n le nombre de taches.
-                  Dans les algorithmes de la partie exacte, à chaque niveau k de l'arbre on a un ordonnancement de taille k (sauf pour le niveau 0 ou on a juste 1 noeud). Dans chaque ordonnancement la première tache à n valeurs possibles la seconde n-1 et ainsi de suite. Par exemple pour un ordonnancement de taille 3 on a : 1(racine) + 3 + 3*2 + 3*2*1 = 16 noeuds. Le nombre de noeud est exponentiellement grand. De ce fait on prendra uniquement des instances de taille 9 maximum. \\
-                  Le choix de la solution initiale comme borne est très important et peut réduire considérablement le temps de calcul.
-                }
-
-                \paragraph{}{
-                \begin{figure}[h]
+		On remarque également que le choix de la solution initiale comme borne supérieure est très important et peut réduire considérablement le temps de calcul. Pour tester cette importance, on compare les algorithmes avec et sans l'initialisation de la borne supérieure avec l'algorithme de Johnson (figure~\ref{fig:init}). Utiliser la solution approchée comme borne d'initialisation permet de grandement réduire les temps de calculs.
+		
+		\begin{figure}[H]
 			\centering
-			\includegraphics[width=0.85\linewidth]{graphes/b2.png}
-			\caption{On observe que le nombre de noeuds explorés avec la borne b2 est bien plus important qu'avec la borne b1.}
-			\label{fig:b2}
-		\end{figure}
-		}
-
-                \paragraph{}{
-                 Pour tester l'importance de l'initilisation, on compare les algorithme avec/ sans l'initialisation de la borne supérieur avec l'algorithme de Johnson.
-                  \begin{figure}[H]
-			\centering
-			\includegraphics[width=0.85\linewidth]{graphes/initialisation.png}
+			\includegraphics[width=0.75\linewidth]{graphes/initialisation.png}
 			\caption{Comparaison des algorithme avec ou sans initialisation}
 			\label{fig:init}
 		  \end{figure}
-                  On remarque que les arbres ou l'on initialise la borne supérieur avec le resultat de l'algorithme de Johnson sont plus rapide pour calculer l'ordonnancement optimal que les autres.
 
-                  
-                }
+                \begin{figure}[h]
+			\centering
+			\includegraphics[width=0.75\linewidth]{graphes/b2.png}
+			\caption{On observe que le nombre de noeuds explorés avec la borne b2 est bien plus important qu'avec la borne b1.}
+			\label{fig:b2}
+		\end{figure}
+                
+     \subsection*{Deuxième algorithme approché: Branch and Bound Greedy}
+     
+     \begin{figure}[H]
+		\centering
+		\includegraphics[width=0.75\linewidth]{graphes/branch_and_greed.png}
+		\caption{Mesure de performance de l'algorithme approché avec borne=10}
+		\label{fig:perfBorne}
+    \end{figure}
+    On observe, dans la figure~\ref{fig:perfBorne}, que l'algorithme approché est plus rapide que le branch and bound mais plus lent que l'algorithme de Jonhson. Pour de petites instances, l'algorithme approché donne des solutions plus précises donc il vaut mieux l'utiliser, mais quand on passe à de plus grande instances, de part sa rapidité, Johnson semble être une meilleure alternative.
 
-                \paragraph{Conclusion}{
-                  Le choix des bornes est une étape crucial car ce sont elles qui nous permettent d'avoir un algorithme efficace mais c'est aussi difficile car il y a un compromis à faire entre le temps de calcul de la borne et sa qualité ( le nombre de noeud qu'elle permet d'élaguer).
+                \subsection*{Conclusion}
+Le choix des bornes est une étape cruciale car ce sont elles qui nous permettent d'avoir un algorithme efficace mais c'est aussi difficile car il y a un compromis à faire entre le temps de calcul de la borne et sa qualité (le nombre de noeuds qu'elle permet d'élaguer).
                   
 \end{document}
