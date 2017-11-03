@@ -8,7 +8,10 @@
 \usepackage[french]{babel}
 \usepackage[small, center]{titlesec}
 \usepackage{listings}
+\usepackage{float}
 \usepackage{amsmath, amsthm, amssymb, mathtools}
+
+\setlength{\parskip}{.5em}
 
 \begin{document}
 	\begin{center}
@@ -115,30 +118,81 @@
 		
 		\paragraph{Question 8.}{On peut appliquer cette méthode arborescente et calculer les bornes quelque soit le nombre $k$ de machines. Cependant, plus on considère de machines, moins les bornes obtenues seront utiles car elles seront trop petites (trop optimistes) pour atteindre les conditions d'élaguage. 		
 		}
+	
+	\section*{Partie 3: Mise en oeuvre}
+		\subsection*{Algorithme approché}
 		
-	        \section*{Partie 3: Mise en oeuvre}
-	        
-		\paragraph{Notes expérimentales}{Il semble que la borne b2 retourne une valeur plus faible de manière générale, de ce fait on coupe moins de noeuds. En revanche, elle est plus rapide à calculer. Sur l'exemple test3 , avec la borne b2 on explore 87 pourcent de l'arbre alors que la borne b1 nous fait exploré 76 pourcent de l'arbre. \\
+		On s'intéresse tout d'abord aux performances de l'algorithme approché implémenté en Python. On observe dans la figure~\ref{fig:tj} que le temps de calcul ne varie pas selon le type de donnée ce qui est logique car la selection du max se fait en $O(n)$ peu importe la durée des tâches. De plus, on remarque que sa complexité est de $O(n^2)$ comme montré dans la partie théorique.
+		
+		Les données visibles en figure~\ref{fig:tj} correspondent à des moyennes de temps de résolution sur 50 instances différentes pour chaque nombre de tâches mesuré.
+		
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=0.85\linewidth]{graphes/Johnson.png}
+			\caption{Mesure de performance de l'algorithme Johnson}
+			\label{fig:tj}
+		\end{figure}
+		
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=0.8\linewidth]{graphes/verifValiditeJohnson.png}
+			\caption{Verification de la validité de Johnson}
+			\label{fig:validiteJ}
+		\end{figure}
+		
+		Pour vérifier que nos algorithmes approchés retournent le bon résultat on trace leur resultat et 2*opt pour tous les types de donnés (figure~\ref{fig:validiteJ}).
+		
+		\subsection*{Méthode exacte}
+		
+	L'algorithme correspondant à la méthode arborescente a été implémenté en Python. Pour mesurer ses performances, on a d'abord mesuré le temps de résolution moyen pour des instances de taille croissante comme pour Johnson. Cela étant, les temps de résolution étant particulièrement longs pour des grandes instances, on borne le nombre maximal de tâches à 6. La figure~\ref{fig:temps_exact} présente les mesures réalisées avec les bornes inférieures $b_1$ et $\max\left\{ b_1, b_2, b_3 \right\}$ étudiées en partie théorique.
+		
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width=0.85\linewidth]{graphes/time_exact_20iter_b1bmax.png}
+			\caption{Mesure de performance de la méthode arborescente}
+			\label{fig:temps_exact}
+		\end{figure}
+		
+	On remarque, dans la figure~\ref{fig:temps_exact}, que le temps de calcul pour les données avec corrélation sur machines est nettement plus important que pour les autres. Cela s'explique par le fait que durées les plus longues sont situées sur la machine C. De ce fait la borne $b^\pi_A$ de $b_1$ est trop optimiste donc ne va pas être prise par le max ($b_1 = \max\left\{b^\pi_A, b^\pi_B, b^\pi_C\right\}$), de meme pour la borne $b^\pi_B$. Il reste uniquement la borne $b^\pi_C$ qui devient réaliste seulement que l'ordonnancement $\pi$ est grand donc il faut explorer l'arbre en profondeur afin d'avoir des élagages ce qui explique que la lenteur de l'algorithme pour ce type de données.
+		
+		\paragraph{Notes expérimentales}{Il semble que la borne $b_2$ retourne une valeur plus faible de manière générale, de ce fait on coupe moins de noeuds avec cette borne. En revanche, elle est plus rapide à calculer. Sur l'exemple test3, avec la borne b2 on explore 87 pourcent de l'arbre alors que la borne b1 nous fait exploré 76 pourcent de l'arbre. \\
                   Soit n le nombre de taches.
-                  Dans les algorithmes de la partie exacte, à chaque niveau k de l'arbre on a un ordonnancement de taille k (sauf pour le niveau 0 ou on a juste 1 noeud). Dans chaque ordonnancement la première tache à n valeurs possibles la seconde n-1 et ainsi de suite. Le nombre de noeud est exponentiellement grand. De ce fait on prendra uniquement des instances de taille 9 maximum. \\
+                  Dans les algorithmes de la partie exacte, à chaque niveau k de l'arbre on a un ordonnancement de taille k (sauf pour le niveau 0 ou on a juste 1 noeud). Dans chaque ordonnancement la première tache à n valeurs possibles la seconde n-1 et ainsi de suite. Par exemple pour un ordonnancement de taille 3 on a : 1(racine) + 3 + 3*2 + 3*2*1 = 16 noeuds. Le nombre de noeud est exponentiellement grand. De ce fait on prendra uniquement des instances de taille 9 maximum. \\
                   Le choix de la solution initiale comme borne est très important et peut réduire considérablement le temps de calcul.
                 }
                 \paragraph{graphes et observations}{
 
-                  Dans ce projet on utilisera type1 pour designer les données non-corrélées, type2 pour les corrélation sur les durées d'exécution et type3 pour Corrélation sur les machines.\\
+                  Dans ce projet on utilisera type1 pour designer les données non-corrélées, type2 pour les corrélation sur les durées d'exécution et type3 pour corrélation sur les machines.\\
 
                   \includegraphics{graphes/exacte_b1.png}
-                  On remarque que le temps de calcul pour le type 3(Corrélation sur les machines) est nettement plus important que pour les autres. Cela s'explique par le fait que les taches avec les durées les plus longues sont situées sur la machine C. De ce fait la borne bA est trop optimiste donc ne va pas prise par le max, de meme pour la borne bC. Il reste uniquement la borne bC qui devient réaliste seulement que l'ordonancement $\pi$ est grand donc il faut explorer l'arbre en profondeur afin d'avoir des élagages ce qui explique que la lenteur du type 3.
+                  
                   
                 }
                 \paragraph{}{
                   \includegraphics{graphes/node_b1.png}
-                  Nombre de noeuds explorés par la methode exacte avec la borne b1.
+                  Nombre de noeuds explorés par la methode exacte avec la borne b1. On observe que le type1 explore le plus de noeud alors que les données de ce type sont les plus rapides à calculer(voir graphe au dessus).
+                  On peut donc supposer que les bornes sont plus rapides à calculer ?
                 }
 
                 \paragraph{}{
-                  \includegraphics{graphes/Johnson.png}
-                  Le temps de calcul de l'algorithme de Johnson.
+                  \includegraphics{graphes/exact_b2.png}
+                  La methode arborescente avec la borne b2. On remarque que la borne b2 à un meilleur temps de calcul bien qu'elle coupe moins de noeuds. C'est lié au fait qu'elle est plus rapide à calculer.
+                }
+
+                \paragraph{}{
+                  Soit methode1 , la methode arborescente en initialisant la borne supérieur à $\inf$.
+                  Soit methode2 , la methode arborescente en initialisant la borne supérieur avec le résultat de l'algorithme de Johnson
+                  
+                  \includegraphics{graphes/exacte_vs_mix_type1.png}
                   }
+                Pour le type 1
+                \paragraph{}{
+                  \includegraphics{graphes/exact_vs_mix_type2.png}
+                  Pour le type 2
+                }
+                \paragraph{}{
+                  \includegraphics{graphes/exact_vs_mix_type3.png}
+                  Pour le type 3
+                }
                   
 \end{document}
