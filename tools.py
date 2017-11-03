@@ -168,8 +168,8 @@ def main():
     #save('my_data_m1', t)
 
     
-#if __name__ == "__main__":
-#    main()
+if __name__ == "__main__":
+   main()
 
-main()
+# main()
 
