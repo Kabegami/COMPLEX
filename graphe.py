@@ -100,7 +100,7 @@ def mesure_node(methode, typeGen, nbTachesMax, nbInstances, step, debug=False, *
         L_cpt.append(sumCpt / (1.0 * nbInstances))
         sumCpt = 0
         numTache += step
-    return L_nbTaches, L_cpt
+    return L_nbTaches, L_cpt    
 
 def mesure_approximation(methode, typeGen, nbTachesMax, nbInstances, step, debug=False):
     #print('args : ', args)
@@ -126,25 +126,29 @@ def mesure_approximation(methode, typeGen, nbTachesMax, nbInstances, step, debug
             c = circuit.Circuit(P, M)
             res = c.resolve()
             opt, exacte = arborescence.arborescence_mix(n, M)
+            #print('exacte : ', exacte)
+            #print('opt ', opt)
             sumRes += res
             sumExacte += exacte
+            
         L_nbTaches.append(numTache)
-        L_exacte.append((sumExacte / (1.0*nbInstances)))
+        L_exacte.append(2*(sumExacte / (1.0*nbInstances)))
         L_res.append(sumRes / (1.0*nbInstances))
-        sumCpt = 0
+        sumRes = 0
         sumExacte = 0
         numTache += step
     return L_nbTaches, L_res, L_exacte
 
-def graphe_approximation(methode, name, numMax, nbInstances, step, xlabel='nombre de taches', ylabel="resultat de l'ordonnancement", courbe_label="type"):
+def graphe_approximation(methode, name, numMax, nbInstances, step, xlabel='Nombre de taches', ylabel="Resultat de l'ordonnancement", courbe_label="type"):
     prefix = 'type'
     M = []
     for i in range(1,4):
         data_type = prefix + (str)(i)
+        L_label= ['',"Données non-corrélées", "Corrélation sur les durées d'éxécution", "Corrélation sur les machines"]
         L_nbTaches, L_res, L_exacte = mesure_approximation(methode, data_type, numMax, nbInstances, step)
         #s = name + '_' + data_type
-        plt.plot(L_nbTaches, L_res, label=data_type + ' Johnson')
-        plt.plot(L_nbTaches, 2 * L_exacte, label=data_type + ' 2*opt')
+        plt.plot(L_nbTaches, L_res, label=L_label[i] + ' Johnson')
+        plt.plot(L_nbTaches, L_exacte, label=L_label[i] + ' 2*opt')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.legend()
@@ -169,13 +173,13 @@ def save_graphe_data(filename, L_nbTaches, L_time, dirname='dataGraphe/'):
     f.close()
     
 
-def draw(L_nbTaches, L_time,xlabel='nombre de taches', ylabel='temps de calcul'):
+def draw(L_nbTaches, L_time,xlabel='Nombre de taches', ylabel='Temps de calcul'):
     plt.plot(L_nbTaches, L_time)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.show()
 
-def multipledraw(L_nbTaches, M_cpt,xlabel='nombre de taches', ylabel='temps de calcul',courbe_label='type'):
+def multipledraw(L_nbTaches, M_cpt,xlabel='Nombre de taches', ylabel='Temps de calcul',courbe_label='type'):
     i = 1
     for L_cpt in M_cpt:
         plt.plot(L_nbTaches, L_cpt,label=courbe_label + (str)(i))

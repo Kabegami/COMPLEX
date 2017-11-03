@@ -119,7 +119,7 @@
 		\end{alignat*}
 		}
 		
-		\paragraph{Question 8.}{On peut appliquer cette méthode arborescente et calculer les bornes quelque soit le nombre $k$ de machines. Cependant, plus on considère de machines, moins les bornes obtenues seront utiles car elles seront trop petites (trop optimistes) pour atteindre les conditions d'élaguage. 		
+		\paragraph{Question 8.}{On peut appliquer cette méthode arborescente et calculer les bornes quelque soit le nombre $k$ de machines, notament on peut modifier la borne b1 avec $b1\prime = max(b^{\pi}_A, b^{\pi}_B,...,b^{\pi}_K)$ et en modifiant les bornes $b^{\pi}_M$ afin d'inclure les autres machines . Du coup on a plus de calcule à faire sur tous les noeuds donc un algorithme plus lent. De plus l'arbre est de taille exponentiel donc le calcul va être extrement long.	
 		}
 
                 \paragraph{Question 10}{Nous avons mis en oeuvre un algorithme de recherche arborescente de la manière suivante : \\
@@ -164,18 +164,18 @@
 			\caption{Verification de la complexité}
 			\label{fig:??}
 		\end{figure}
-                En procédant ainsi on obtient p = 1.14227148219, ce qui est contraire à notre afirmation théorique. Cela peut être du à la façon de trouver le plus petit element de la matrices des taches par numpy qui est optimisé .
+                En procédant ainsi on obtient p = 1.14227148219, ce qui est contraire à notre afirmation théorique. Cela peut être du à la façon de trouver le plus petit element de la matrices des taches par numpy qui est optimisé  notament avec du calcul distribué.
                 
 		
 		\begin{figure}[H]
 			\centering
-			\includegraphics[width=0.8\linewidth]{graphes/verifValiditeJohnson.png}
+			\includegraphics[width=0.8\linewidth]{graphes/validite_Johnson.png}
 			\caption{Verification de la validité de Johnson}
 			\label{fig:validiteJ}
 		\end{figure}
                 
 		
-		Pour vérifier que nos algorithmes approchés retournent le bon résultat on trace leur resultat et 2*opt pour tous les types de donnés. La figure est fausse car 500 temps pour 1 tache est abérent (figure~\ref{fig:validiteJ}).
+		Pour vérifier que nos algorithmes approchés retournent le bon résultat on trace leur resultat et 2*opt pour tous les types de donnés. Pour chaque type de donné, on observe que la courbe associée à l'algorithme de Johnson est bien en dessous de 2*opt. Donc notre algorithme semble valide .(figure~\ref{fig:validiteJ}).
 		
 		\subsection*{Méthode exacte}
 		
