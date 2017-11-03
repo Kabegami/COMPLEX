@@ -172,6 +172,13 @@ def get_noeud_explore(nbTaches, matrice, b=bornes.b1):
     #print('tree.cpt : ', tree.cpt)
     return tree.cpt
 
+def get_noeud_explore_b2(nbTaches, matrice):
+    taches = [i for i in range((int)(nbTaches))]
+    tree = Arbre(taches, matrice, bornes.b2)
+    tree.resolve()
+    #print('tree.cpt : ', tree.cpt)
+    return tree.cpt
+
 def get_accuracy(nbTaches, matrice, b=bornes.b1):
     taches = [i for i in range((int)(nbTaches))]
     tree = Arbre(taches, matrice, b)

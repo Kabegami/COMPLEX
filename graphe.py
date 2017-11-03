@@ -88,7 +88,19 @@ def compare_methodes(methode1, methode2, name1, name2, nbTachesMax, nbInstances,
     plt.ylabel('Temps de calcul')
     plt.legend()
     plt.show()
-        
+
+def compare_node(methode1, methode2, name1, name2, nbTachesMax, nbInstances, step):
+    L_label= ['',"Données non-corrélées", "Corrélation sur les durées d'éxécution", "Corrélation sur les machines"]
+    for i in range(1,4):
+        data_type = 'type' + (str)(i)
+        L_nbTaches, L_time1 = mesure_node(methode1,data_type, nbTachesMax, nbInstances, step)
+        L_nbTaches, L_time2 = mesure_node(methode2,data_type, nbTachesMax, nbInstances, step)
+        plt.plot(L_nbTaches, L_time1, label=L_label[i] + ' ' + name1)
+        plt.plot(L_nbTaches, L_time2, label=L_label[i] + ' ' + name2)
+    plt.xlabel('Nombre de taches')
+    plt.ylabel('Nombre de noeud explorés')
+    plt.legend()
+    plt.show()
     
 
 def mesure_node(methode, typeGen, nbTachesMax, nbInstances, step, debug=False, *args):
@@ -196,8 +208,9 @@ def draw(L_nbTaches, L_time,xlabel='Nombre de taches', ylabel='Temps de calcul')
 
 def multipledraw(L_nbTaches, M_cpt,xlabel='Nombre de taches', ylabel='Temps de calcul',courbe_label='type'):
     i = 1
+    L_label= ['',"Données non-corrélées", "Corrélation sur les durées d'éxécution", "Corrélation sur les machines"]
     for L_cpt in M_cpt:
-        plt.plot(L_nbTaches, L_cpt,label=courbe_label + (str)(i))
+        plt.plot(L_nbTaches, L_cpt,label=L_label[i])
         i += 1 
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
@@ -248,7 +261,8 @@ def main():
     #build_graphe(approche.branch_and_greed,'branch_and_greed',20,5,5,'nombre de taches', 'temps de calcul', 'type', 10)
     #build_graphe(arborescence.arborescence_mix, 'b2', 8,5,1,'nombre de taches', 'temps de calcul', 'type', bornes.borneMax)
     #graphe_approximation(projet.Johnson, "approché vs exact", 8, 5 , 1)
-    compare_methodes(arborescence.arborescence_mix, arborescence.arborescence_resolve, 'initialisation', 'sans initialisation',7,5,1)
+    #compare_methodes(arborescence.arborescence_mix, arborescence.arborescence_resolve, 'initialisation', 'sans initialisation',7,5,1)
+    #compare_node(arborescence.get_noeud_explore, arborescence.get_noeud_explore_b2, 'borne b1', 'borne b2',7,5,1)
     #L_nbTaches, L_time = mesure_time(projet.Johnson, 'type3', 200, 10, 5)
     #save_graphe_data('Johnson_type3', L_nbTaches, L_time)
     #L_nbTaches, L_time = mesure_time(arborescence.arborescence_resolve, 'type3', 5, 5, 1)
@@ -258,8 +272,8 @@ def main():
     #draw(L_nbTaches, L_time)
     #print('L_nbTaches : ', L_nbTaches)
     #print('L_time : ', L_time)
-    #L_nbTaches, M = read_graphe_file('exacte_type1_b1', 'mix_type1_b1')
-    #multipledraw(L_nbTaches, M,'nombre de taches','temps de calcul', 'methode')
+    L_nbTaches, M = read_graphe_file('exacte_type1_b1','exacte_type2_b1', 'exacte_type3_b1')
+    multipledraw(L_nbTaches, M, 'Nombre de taches','Temps de calcul', 'methode')
     #draw(L_nbTaches, M)
     #print(M)
     #L_nbTaches, L_cpt = mesure_node(arborescence.get_noeud_explore, 'type3', 7, 5, 1)
