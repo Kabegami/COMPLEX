@@ -64,11 +64,11 @@
 		
 	\section*{Partie 2 : méthode exacte}
 		
-		\paragraph{Question 4.}{On cherche ici à améliorer la borne en considérant le fait que la machine B peut être en attente de la machine A avant de commencer à traiter les tâches de l'ensemble $\pi^\prime$ (elle a fini les tâches de $\pi$). Ainsi, si on définit $t^{\prime\pi}_B$ tel que:
+		\paragraph{Question 4.}{On cherche ici à améliorer la borne en considérant le fait que la machine B peut être en attente de la machine A avant de commencer à traiter les tâches de l'ensemble $\pi^\prime$ (elle a fini les tâches de $\pi$ et A n'a pas finit de traiter la plus petite action de $\pi^\prime$). Ainsi, si on définit $t^{\prime\pi}_B$ tel que:
 		\begin{equation*}
 			t^{\prime\pi}_B = \max \left\{ t^{\pi}_B, t^{\pi}_A + \min_{i \in \pi^\prime} d^i_A \right\}
 		\end{equation*}
-		Lorsque $t^{\pi}_B < t^{\pi}_A + \min_{i \in \pi^\prime} d^i_A$, la machine B a fini d'exécuter les tâches de $\pi$ mais attend que la première tâche de $\pi^\prime$ soit exécutée sur A pour poursuivre. Dans ce cas, le terme $t^{\prime\pi}_B$ correspond au plus petit temps avant que la machine B puisse exécuter les tâches de $\pi^\prime$. C'est pourquoi lorsqu'on remplace $t^\pi_B$ par $t^{\prime\pi}_B$ dans $b^\pi_B$ on obtient toujours une borne inférieure.\\
+		Lorsque $t^{\pi}_B < t^{\pi}_A + \min_{i \in \pi^\prime} d^i_A$, la machine B a fini d'exécuter les tâches de $\pi$ mais attend que la première tâche de $\pi^\prime$ soit terminée sur A pour poursuivre. Dans ce cas, le terme $t^{\prime\pi}_B$ correspond au plus petit temps avant que la machine B puisse exécuter les tâches de $\pi^\prime$. C'est pourquoi lorsqu'on remplace $t^\pi_B$ par $t^{\prime\pi}_B$ dans $b^\pi_B$ on obtient toujours une borne inférieure.\\
 		
 		Si on considère maintenant la machine C, on peut selon le même raisonnement définir les événements suivants:
 		\begin{itemize}
@@ -101,15 +101,18 @@
 		\end{equation*}
 		est bien une borne inférieure du temps total pour un ordonnancement $P$ car:
 		\begin{itemize}
-			\item $P$ prend au moins $t^\pi_A$ unités de temps sur A,
+			\item $P$ prend au moins $t^\pi_A$ unités de temps sur $\pi$,
 			\item on a montré que $\left(\Pi_1, k, \Pi_2\right)$ était la meilleure façon de répartir les tâches autour de $k$ sous l'hypothèse que les tâches de $\Pi_1$ ne s'attendront pas et de même pour $\Pi_2$.
 			\item De plus, on a posé aucune hypothèse sur $k$ donc dans $P$ n'importe quelle tâche de $\pi^\prime$ peut prendre le rôle de $k$.
-                        \item Donc pour tous k choisit cette expression est une borne inferieur de l'ordonnancement avec k à cette emplacement
+                        \item Donc en prenant k de façon a maximiser l'expression, on est sur que quel que soit l'ordonnancement débutant par $\pi$ il sera plus grand que notre $b2$.
 		\end{itemize}
-                De cette façon si on choisit le k qui maximise cette expression, alors on aura une borne quel que soit k.
 		}
 		
 		\paragraph{Question 6.}{On pourra suivre le même raisonnement que précédemment et, en se plaçant sur les machines B et C, obtenir la borne $b_3$ suivante:
+                  Répartissons les tâches $i \in \pi^\prime, i \ne k$ de la manière suivante:
+		\begin{itemize}
+			\item si $d^i_B < d^i_C$ alors $i \in \Pi_1$,
+			\item sinon $i \in \Pi_2$.
 		\begin{alignat*}{2}
 			b_3 &= \max_{k \in \pi^\prime} \left\{ t^{\pi}_B + \left( d^k_B + d^k_C \right) + \sum_{i \in \Pi_1} d^i_B + \sum_{i \in \Pi_2} d^i_C \right\} \\
 			b_3 &= \max_{k \in \pi^\prime} \left\{ t^{\pi}_B + \left( d^k_B + d^k_C \right) + \sum_{i \in \pi^\prime, i \ne k} \min \left\{ d^i_B, d^i_C \right\} \right\}
@@ -118,6 +121,25 @@
 		
 		\paragraph{Question 8.}{On peut appliquer cette méthode arborescente et calculer les bornes quelque soit le nombre $k$ de machines. Cependant, plus on considère de machines, moins les bornes obtenues seront utiles car elles seront trop petites (trop optimistes) pour atteindre les conditions d'élaguage. 		
 		}
+
+                \paragraph{Question 10}{Nous avons mis en oeuvre un algorithme de recherche arborescente de la manière suivante : \\
+                  Soit un noeud n avec un ordonnancement partiel P. Afin d'évaluer un noeud, on génère $k$ ordonnancement final débutant par P de manière aléatoire et on prend la solution la plus petite.
+                  \begin{itemize}
+                  \item On initialise l'algorithme avec un noeud vide(racine de l'arbre)
+                  \item Tant que l'on a pas un ordonnancement final :
+                  \item  A chaque étape de l'algorithme dans un noeud n, on évalue chacun de ces fils et on prend celui qui à la plus petite valeur qui devient notre noeud courant.
+              
+
+                    remarque : Pour le nombre $k$ d'évaluation d'un noeud, on choisit de prendre $k = min(borne,(taille P)!)$ de cette façon si le nombre de noeuds est suffisament petit, il les explore tous et il est limité quand on a un nombre trop important. De ce fait pour les petits ordonnancement cette alorithme retourne une solution optimal si le nombre de noeuds total < borne.
+
+                    \begin{figure}[H]
+			\centering
+			\includegraphics[width=0.85\linewidth]{graphes/branch_and_greed.png}
+			\caption{Mesure de performance de l'algorithme approché avec borne=10}
+			\label{fig:tj}
+		\end{figure}
+                    
+                    }
 	
 	\section*{Partie 3: Mise en oeuvre}
 		\subsection*{Algorithme approché}
