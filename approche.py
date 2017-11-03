@@ -23,7 +23,7 @@ class Node(object):
 
     def expend(self):
         nbEvalutation = min(self.borneEvalutation, math.factorial(len(self.Lrestantes)))
-        print('nbEvalutation : ', nbEvalutation)
+        #print('nbEvalutation : ', nbEvalutation)
         L_son = self.getSon()
         mini = float('inf')
         bestSon = None

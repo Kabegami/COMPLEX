@@ -9,6 +9,8 @@ import arborescence
 import numpy as np
 import bornes
 import matplotlib.pyplot as plt
+import approche
+from scipy import stats
 plt.rcParams['backend'] = "Qt4Agg"
 
 def getTime(function, *args):
@@ -127,7 +129,7 @@ def mesure_approximation(methode, typeGen, nbTachesMax, nbInstances, step, debug
             sumRes += res
             sumExacte += exacte
         L_nbTaches.append(numTache)
-        L_exacte.append(2*(sumExacte / (1.0*nbInstances)))
+        L_exacte.append((sumExacte / (1.0*nbInstances)))
         L_res.append(sumRes / (1.0*nbInstances))
         sumCpt = 0
         sumExacte = 0
@@ -142,7 +144,7 @@ def graphe_approximation(methode, name, numMax, nbInstances, step, xlabel='nombr
         L_nbTaches, L_res, L_exacte = mesure_approximation(methode, data_type, numMax, nbInstances, step)
         #s = name + '_' + data_type
         plt.plot(L_nbTaches, L_res, label=data_type + ' Johnson')
-        plt.plot(L_nbTaches, L_exacte, label=data_type + ' 2*opt')
+        plt.plot(L_nbTaches, 2 * L_exacte, label=data_type + ' 2*opt')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.legend()
@@ -197,10 +199,11 @@ def verifComplexite(L_nbTaches, L_time):
     for i in range(len(t2)):
         t1[i] = math.log(t1[i])
         t2[i] = math.log(t2[i])
-    q = (t2[1] - t2[0]) / (t1[1] - t1[0])
-    print('q : ', q)
-    draw(t1,t2)
-    return math.ceil(q)
+    x = np.array(t1)
+    y = np.array(t2)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+    print('slope : ', slope)
+    draw(t1,t2,' Log(nombre de taches)','Log(temps de résolution)')
 
 def build_graphe(methode,name, numMax ,nbInstances, step, xlabel='nombre de taches', ylabel='temps de calcul', courbe_label='type',*args):
     prefix = 'type'
@@ -220,12 +223,12 @@ def build_graphe(methode,name, numMax ,nbInstances, step, xlabel='nombre de tach
 
 def main():
     #test()
-    L_nbTaches, L_time = mesure_time(projet.Johnson, 'type1', 200,10,5)
-    q = verifComplexite(L_nbTaches, L_time)
-    print('q : ', q)
-    #build_graphe(projet.Johnson,'Johnson',400,10,1)
+    #L_nbTaches, L_time = mesure_time(projet.Johnson, 'type1', 200,10,5)
+    #q = verifComplexite(L_nbTaches, L_time)
+    #print('q : ', q)
+    #build_graphe(approche.branch_and_greed,'branch_and_greed',20,5,5,'nombre de taches', 'temps de calcul', 'type', 10)
     #build_graphe(arborescence.arborescence_mix, 'b2', 8,5,1,'nombre de taches', 'temps de calcul', 'type', bornes.borneMax)
-    #graphe_approximation(projet.Johnson, "approché vs exact", 8, 5 , 1)
+    graphe_approximation(projet.Johnson, "approché vs exact", 8, 5 , 1)
     #L_nbTaches, L_time = mesure_time(projet.Johnson, 'type3', 200, 10, 5)
     #save_graphe_data('Johnson_type3', L_nbTaches, L_time)
     #L_nbTaches, L_time = mesure_time(arborescence.arborescence_resolve, 'type3', 5, 5, 1)
