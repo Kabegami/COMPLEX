@@ -197,7 +197,7 @@ if __name__ == "__main__":
     print("***************************************************")
     print("       DEBUT DU PROGAMME")
     print("***************************************************")
-    t1, t2 = read_file('Instances/exempleProf/test3.txt')
+    t1, t2 = read_file('Instances/exempleProf/soutenance.txt')
     nbTaches = t1[0]
     print(nbTaches)
     taches = [i for i in range((int)(nbTaches))]
@@ -214,7 +214,7 @@ if __name__ == "__main__":
     #print('resultat du circuit : ', res)
     #accuracy = tree.accuracy(True)
     #print('accuracy : ' ,accuracy)
-    P, sol = arborescence_mix(nbTaches, matrice, bornes.b2,True)
+    P, sol = arborescence_mix(nbTaches, matrice, bornes.b1,True)
     #P,sol = arborescence_resolve(nbTaches, matrice, bornes.b1, True)
     print('P : ', P)
     print('valeur de la solution optimale : ', sol)

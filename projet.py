@@ -71,7 +71,7 @@ def C():
     
 
 if __name__ == "__main__":
-    t1, t2 = read_file('Instances/exempleProf/test2.txt')
+    t1, t2 = read_file('Instances/exempleProf/soutenance.txt')
     nbTaches = t1[0]
     M = np.array(t2)
     #il faut créer une fonction qui retire une machine
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     P = Johnson(nbTaches, AB)
     print("P : ", P)
     solver = circuit.Circuit(P, M)
-    t = solver.resolve(True)
+    t = solver.resolve()
     print('M : ', solver.MC.M)
     print(t)
 
