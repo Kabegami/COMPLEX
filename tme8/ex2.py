@@ -1,3 +1,5 @@
+#coding: utf8
+
 import random
 import math
 
@@ -75,18 +77,65 @@ def test():
     assert(pgcd(2,3) == 1)
     assert(pgcd(4,2) == 2)
     assert(pgcd(9,6) == 3)
+
+def Miller_Rabin(h,m, T):
+    """ n = 1 + 2 ^ h * m, avec m impair, T : nb itérations"""
+    n = 1 + (2 ** h) * m
+    for i in range(1, T):
+        a = random.randint(1,n)
+        b = a ** m % n
+        flag = False
+        if b != 1 and b != (n-1):
+            for j in range(1, h):
+                b = b ** 2 % n
+                if b == 1:
+                    return False
+                if b == n - 1:
+                    flag = True
+            if not flag:
+                return False
+    return True
+
+def carmichael():
+    h = 1
+    m = 1
+    while True:
+        r = random.randint(0,1)
+        if r == 0:
+            h += 1
+        else:
+            m += 1
+        yield (1 + (2 ** (h)) * m, h, m)
+
+def test_Miller_Rabin():
+    n =  1 + (2 **(2)) * 2
+    b = Miller_Rabin(2,2, 20)
+    C = carmichael()
+    cpt = 0
+    T = 50
+    for i in range(T):
+        v,h,m = C.next()
+        print('v : ', v)
+        premier = firstTest(v)
+        if Miller_Rabin(h,m,20) == premier:
+            cpt += 1
+    print('cpt :', cpt)
+    print('accuracy :', cpt / float(T))
+                        
+        
     
 
 if __name__ == "__main__":
-    test()
-    b = myInverse(2,5)
-    print('b : ', b)
-    n = base2(24)
-    print('n : ', n)
-    p = expoMod(2,5,10)
-    print('p : ', p)
-    premier = testFermat(5)
-    print('test premier :', premier)
-    a = accuracy()
-    print('accuracy : ', a)
+    # test()
+    # b = myInverse(2,5)
+    # print('b : ', b)
+    # n = base2(24)
+    # print('n : ', n)
+    # p = expoMod(2,5,10)
+    # print('p : ', p)
+    # premier = testFermat(5)
+    # print('test premier :', premier)
+    # a = accuracy()
+    # print('accuracy : ', a)
+    test_Miller_Rabin()
     
